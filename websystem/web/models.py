@@ -1,5 +1,7 @@
 from asyncio.windows_events import NULL
+from datetime import datetime
 from statistics import mode
+from xmlrpc.client import _datetime_type
 from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
@@ -11,3 +13,23 @@ class CustomUser(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class Logs(models.Model):
+    LogId = models.AutoField(primary_key=True)
+    CreationDate=models.DateTimeField(default=datetime.now().strftime(("%d.%m.%Y %H:%M:%S")))
+    Change=models.TextField()
+    Initiator=models.OneToOneField(User,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.LogId
+
+class Ticket(models.Model):
+    TicketId=models.AutoField(primary_key=True)
+    CreationDate=models.DateTimeField(default=datetime.now().strftime(("%d.%m.%Y %H:%M:%S")))
+    Status=models.BooleanField()
+    Initiator=models.OneToOneField(User,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.TicketId
+
