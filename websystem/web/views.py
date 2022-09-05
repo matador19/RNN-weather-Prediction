@@ -34,6 +34,10 @@ def loginform(request):
     else:
          return render(request,'web/login.html')
 
+def logoutsuccess(request):
+    logout(request)
+    return redirect(home)
+
 @login_required
 def admindash(request):
     return render(request,'web/admindash.html')
@@ -41,3 +45,4 @@ def admindash(request):
 @login_required
 def supdash(request):
     return render(request,'web/supdash.html')
+
