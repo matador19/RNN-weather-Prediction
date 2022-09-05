@@ -1,4 +1,11 @@
 {% extends 'web/base.html' %}
 {% block content %}
-        <h1>I AM sup </h1>
+{% if user.customuser.Role == "Supervisor" %}
+<h1>I AM SUPERVISOR </h1>
+{% else %}
+<div class="container" style="display:flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh;">
+<h1> You are not a Supervisor. Please Log in as Supervisor </h1>
+<a href="{% url 'logout' %}">LOGIN AGAIN</a>
+</div>
+{% endif %}
 {% endblock %}

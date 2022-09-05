@@ -1,4 +1,11 @@
 {% extends 'web/base.html' %}
 {% block content %}
+{% if user.customuser.Role == "Admin" %}
         <h1>I AM ADMIN </h1>
+{% else %}
+<div class="container" style="display:flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh;">
+<h1> You are not an admin. Please Log in as Admin </h1>
+<a href="{% url 'logout' %}">LOGIN AGAIN</a>
+</div>
+{% endif %}
 {% endblock %}
