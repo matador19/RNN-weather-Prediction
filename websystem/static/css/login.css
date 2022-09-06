@@ -1,4 +1,27 @@
-h5{
+html, 
+body {
+    width: 100%;
+    height: 100%;
+}
+
+.container {
+    max-width: 560px;
+}
+
+.login-form {
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px -10px rgba(0 0 0 / 0.4);
+}
+
+.login-form-icon {
+    --size: 70px;
+    width: var(--size);
+    height: var(--size);
+    font-size: 1.3rem;
+}
+
+.form-title {
+    margin-bottom: 5rem;
     font-family: " Copperplate", fantasy;
 }
 
