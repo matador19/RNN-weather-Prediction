@@ -1,7 +1,11 @@
 {% extends 'web/base.html' %}
 {% block content %}
 {% if user.customuser.Role == "Admin" %}
-        <h1>I AM ADMIN </h1>
+        <h4>DASHBOARD</h4>
+        <p style="margin-left:2rem ;">Welcome &nbsp; <span style="font-weight: bold; font-style: italic;">{{user.username}}</span></p>
+        <p>Number of Administrators: &ensp;<span style="font-weight: bold; font-style: italic;">{{count_admin_user}}</p>
+        <p>Number of electrical supervisors: &ensp;<span style="font-weight: bold; font-style: italic;">{{count_sup_user}}</p>
+        <p>Tickets Pending: &ensp;<span style="font-weight: bold; font-style: italic;">NUll</p>
 {% else %}
 <div class="container" style="display:flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh;">
 <h1> You are not an admin. Please Log in as Admin </h1>

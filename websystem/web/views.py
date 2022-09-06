@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.models import User
 
 # Create your views here.
 def home(request):
@@ -40,7 +40,11 @@ def logoutsuccess(request):
 
 @login_required
 def admindash(request):
-    return render(request,'web/admindash.html')
+    count_admin_user=User.objects.filter(customuser__Role="Admin").count()
+    count_sup_user=User.objects.filter(customuser__Role="Supervisor").count()
+    
+    return render(request,'web/admindash.html',context={'count_admin_user':count_admin_user,
+                                                        'count_sup_user':count_sup_user})
 
 @login_required
 def supdash(request):
