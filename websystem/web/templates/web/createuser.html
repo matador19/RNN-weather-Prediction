@@ -1,11 +1,21 @@
 {% extends 'web/base.html' %}
 {% block content %}
 {% if user.customuser.Role == "Admin" %}
-<div  >
-
-    
-</div>
-
+<h2>REGISTER NEW USER</h2>
+{% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>FAILED</strong> {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+      {% endif %}
+	<form method="POST">
+		{% csrf_token %}
+		{{ register_form }} 
+    <br/>                   
+		<button class="btn btn-primary mt-3" type="submit">Create User</button>
+	</form>
 {% else %}
 <div class="container" style="display:flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh;">
 <h1> You are not an admin. Please Log in as Admin </h1>

@@ -6,5 +6,6 @@ urlpatterns = [
     path("login",views.loginform,name="login"),
     path("logout",views.logoutsuccess,name="logout"),
     path("admindashboard",views.admindash,name="admindash"),
-    path("supervisordashboard",views.supdash,name="supdash")
+    path("supervisordashboard",views.supdash,name="supdash"),
+    path("createuser", views.register_request, name="createuser")
 ]
