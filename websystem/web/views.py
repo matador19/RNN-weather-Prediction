@@ -4,12 +4,30 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from .forms import NewUserForm
+from web.models import CustomUser
 
 # Create your views here.
 def home(request):
     return render(request,'web/welcome.html')
 
    
+def register_request(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST)
+        if form.is_valid():
+            User=form.save()
+            role=form.cleaned_data.get('Role')
+            CustomUser.objects.create(
+                user=User,
+                Role=role
+            )
+            messages.success(request, "Registration successful." )
+            return redirect(admindash)
+        messages.error(request, "Unsuccessful registration. Invalid information.")
+    form = NewUserForm()
+    return render (request=request, template_name="web/createuser.html", context={"register_form":form})
+    
 
 def loginform(request):
     if request.method =="POST":
