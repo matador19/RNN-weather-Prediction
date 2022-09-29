@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .forms import NewUserForm
-from web.models import CustomUser
+from web.models import CustomUser,Logs
 
 # Create your views here.
 def home(request):
@@ -17,12 +17,19 @@ def register_request(request):
         form = NewUserForm(request.POST)
         if form.is_valid():
             User=form.save()
+            createduser=form.cleaned_data.get('username')
             role=form.cleaned_data.get('Role')
             CustomUser.objects.create(
                 user=User,
                 Role=role
             )
             messages.success(request, "Registration successful." )
+            createlog=Logs()
+            createlog.Change=request.user.username+" created user " + createduser+" as a "+role
+            createlog.Type="User creation"
+            createlog.Initiator=request.user
+            createlog.save()
+
             return redirect(admindash)
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = NewUserForm()
@@ -38,10 +45,20 @@ def loginform(request):
         if user is not None and user.customuser.Role=='Admin':
             # A backend authenticated the credentials
             login(request,user)
+            adminlog=Logs()
+            adminlog.Change= username+"  has logged in"
+            adminlog.Initiator=user
+            adminlog.Type="LOGIN"
+            adminlog.save()
             return redirect(admindash)
 
         elif user is not None and user.customuser.Role=='Supervisor':
             login(request,user)
+            suplog=Logs()
+            suplog.Change= username+"  has logged in"
+            suplog.Initiator=user
+            suplog.Type="LOGIN"
+            suplog.save()
             return redirect(supdash)
             
         else:
@@ -53,6 +70,12 @@ def loginform(request):
          return render(request,'web/login.html')
 
 def logoutsuccess(request):
+    logoutlog=Logs()
+    user=request.user
+    logoutlog.Change= user.username+"  has logout"
+    logoutlog.Initiator= user
+    logoutlog.Type="LOGOUT"
+    logoutlog.save()
     logout(request)
     return redirect(home)
 
