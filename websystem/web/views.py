@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .forms import NewUserForm
 from web.models import CustomUser,Logs
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 
 # Create your views here.
 def home(request):
@@ -45,11 +48,22 @@ def loginform(request):
         if user is not None and user.customuser.Role=='Admin':
             # A backend authenticated the credentials
             login(request,user)
+            #logs
             adminlog=Logs()
             adminlog.Change= username+"  has logged in"
             adminlog.Initiator=user
             adminlog.Type="LOGIN"
             adminlog.save()
+            #maillog
+            template=render_to_string('web/email_template.html',{'name':username})
+            mail=EmailMessage(
+                'LOG IN ALERT',
+                template,
+                settings.EMAIL_HOST_USER,
+                [user.email]
+                )
+            mail.fail_silently=False
+            mail.send()
             return redirect(admindash)
 
         elif user is not None and user.customuser.Role=='Supervisor':
@@ -90,4 +104,3 @@ def admindash(request):
 @login_required
 def supdash(request):
     return render(request,'web/supdash.html')
-
