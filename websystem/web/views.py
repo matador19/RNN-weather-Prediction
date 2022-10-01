@@ -59,7 +59,7 @@ def loginform(request):
             mail=EmailMessage(
                 'LOG IN ALERT',
                 template,
-                settings.EMAIL_HOST_USER,
+                'aleki1313@proton.me',
                 [user.email]
                 )
             mail.fail_silently=False
