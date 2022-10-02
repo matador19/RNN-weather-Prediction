@@ -9,6 +9,8 @@ from web.models import CustomUser,Logs
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 # Create your views here.
 def home(request):
@@ -104,3 +106,16 @@ def admindash(request):
 @login_required
 def supdash(request):
     return render(request,'web/supdash.html')
+
+@login_required
+def userlogs(request):
+    logs=Logs.objects.exclude(Type='User creation').order_by('-LogId')
+    page = request.GET.get('page', 1)
+    paginator = Paginator(logs, 25)
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
+    return render(request,'web/logs.html',context={'users':users})

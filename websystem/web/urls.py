@@ -9,3 +9,7 @@ urlpatterns = [
     path("supervisordashboard",views.supdash,name="supdash"),
     path("createuser", views.register_request, name="createuser")
 ]
+
+urlpatterns+=[ 
+    path("userlogs",views.userlogs,name="userlogs")
+]
