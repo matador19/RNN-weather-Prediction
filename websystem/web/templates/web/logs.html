@@ -2,17 +2,16 @@
  
 {% block content %}
 
+<!-- This is for all login logs seen by all admins -->
 {% if user.customuser.Role == "Admin" %}
-{% block adminlogs %}
 <ul class="nav mb-2">
     <li class="nav-item border border-dark rounded-pill bg-dark">
       <a class="nav-link disabled" href="#"> USER LOGIN LOG</a>
     </li>
     <li style="margin-left: 1rem;" class="nav-item border border-dark rounded-pill">
-      <a class="nav-link" href="#">USER CREATION</a>
+      <a class="nav-link" href="{% url 'creationlogs' %}">USER CREATION</a>
     </li>
   </ul>
-{% endblock %}
 <table class="table table-striped table-dark">
         <tr>
         <th class="thead-dark">LOGID</th>
@@ -53,5 +52,45 @@
 </nav>
 {% endif %}
 
+
+<!-- This is for supervisor login logs -->
+{% else %}
+<table class="table table-striped table-dark">
+  <tr>
+  <th class="thead-dark">LOGID</th>
+  <th class="thead-dark">LOG TYPE</th>
+  <th class="thead-dark">TIME</th>
+  </tr>
+{% for suplogin in suplogins %}
+<tr>
+  <td >{{suplogin.LogId}}</td>
+  <td >{{suplogin.Type}}</td>
+  <td >{{suplogin.CreationDate}}</td>
+</tr>
+{% endfor %}
+</table>
+  {% if suplogins.has_other_pages %}
+  <nav aria-label="Page navigation example">
+  <ul class="pagination">
+  {% if suplogins.has_previous %}
+  <li><a class="page-link" href="?page={{ suplogins.previous_page_number }}">Previous</a></li>
+  {% else %}
+  <li class="disabled"><span></span></li>
+  {% endif %}
+  {% for i in suplogins.paginator.page_range %}
+  {% if suplogins.number == i %}
+    <li class="active page-link"><span>{{ i }}</span></li>
+  {% else %}
+    <li><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+  {% endif %}
+  {% endfor %}
+  {% if suplogins.has_next %}
+  <li><a class="page-link" href="?page={{ users.next_page_number }}">Next</a></li>
+  {% else %}
+  <li class="disabled"><span></span></li>
+  {% endif %}
+  </ul>
+  </nav>
+  {% endif %}
 {% endif %}
 {% endblock %}

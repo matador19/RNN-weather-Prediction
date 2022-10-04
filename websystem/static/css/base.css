@@ -1,5 +1,9 @@
-h4{
-    font-weight: bold;
+
+body{
+    font-family: 'Courier New', Courier, monospace;
     
 }
 
+h3,h4{
+    font-weight: bold;
+}

@@ -105,11 +105,39 @@ def admindash(request):
 
 @login_required
 def supdash(request):
-    return render(request,'web/supdash.html')
+    logs=Logs.objects.filter(Initiator=request.user).order_by('-LogId')
+    logs=logs[0]
+    return render(request,'web/supdash.html',context={'logs':logs})
 
 @login_required
 def userlogs(request):
-    logs=Logs.objects.exclude(Type='User creation').order_by('-LogId')
+    logs=Logs.objects.exclude(Type='User creation').order_by('-LogId') # for all logins to be seen by all admins
+    suplogins=Logs.objects.filter(Initiator=request.user).order_by('-LogId')# logins for  specific supervisor
+    page = request.GET.get('page', 1)
+
+    # for all logins to be seen by all admins
+    paginator = Paginator(logs, 25)
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
+
+    # logins for  specific supervisor
+    suppaginator = Paginator(suplogins, 25)
+    try:
+        suplogins = suppaginator.page(page)
+    except PageNotAnInteger:
+        suplogins = suppaginator.page(1)
+    except EmptyPage:
+        suplogins = suppaginator.page(suppaginator.num_pages)
+        
+    return render(request,'web/logs.html',context={'users':users,'suplogins':suplogins})
+
+@login_required
+def creationlogs(request):
+    logs=Logs.objects.filter(Type='User creation').order_by('-LogId')
     page = request.GET.get('page', 1)
     paginator = Paginator(logs, 25)
     try:
@@ -118,4 +146,4 @@ def userlogs(request):
         users = paginator.page(1)
     except EmptyPage:
         users = paginator.page(paginator.num_pages)
-    return render(request,'web/logs.html',context={'users':users})
+    return render(request,'web/usercreationlogs.html',context={'users':users})
