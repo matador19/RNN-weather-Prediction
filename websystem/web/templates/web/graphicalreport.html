@@ -1,0 +1,19 @@
+{% extends 'web/base.html' %}
+{% load static %} 
+{% block content %}
+
+<div style="display: flex; flex-direction: row;">
+<canvas id="myChartA" style="width:50%;max-width:590px;"></canvas>
+<canvas id="myChartB" style="width:50%;max-width:590px;"></canvas>
+</div>
+
+<div style="display: flex; flex-direction: row;">
+    <canvas id="myChartC" style="width:50%;max-width:590px;"></canvas>
+    <canvas id="myChartD" style="width:50%;max-width:590px;"></canvas>
+</div>
+<script>var logs=JSON.parse('{{datas|escapejs}}');</script>
+<script src="{% static '/js/report.js' %}"></script>
+
+{% endblock %}
+
+

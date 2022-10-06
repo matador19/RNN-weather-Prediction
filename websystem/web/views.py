@@ -1,3 +1,4 @@
+from multiprocessing import context
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate,login,logout
@@ -10,6 +11,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import json 
 
 
 # Create your views here.
@@ -56,16 +58,19 @@ def loginform(request):
             adminlog.Initiator=user
             adminlog.Type="LOGIN"
             adminlog.save()
-            #maillog
-            template=render_to_string('web/email_template.html',{'name':username})
-            mail=EmailMessage(
-                'LOG IN ALERT',
-                template,
-                'aleki1313@proton.me',
-                [user.email]
-                )
-            mail.fail_silently=False
-            mail.send()
+            try:
+                #maillog
+                template=render_to_string('web/email_template.html',{'name':username})
+                mail=EmailMessage(
+                    'LOG IN ALERT',
+                    template,
+                    'aleki1313@proton.me',
+                    [user.email]
+                    )
+                mail.fail_silently=False
+                mail.send()
+            except:
+                pass
             return redirect(admindash)
 
         elif user is not None and user.customuser.Role=='Supervisor':
@@ -75,6 +80,16 @@ def loginform(request):
             suplog.Initiator=user
             suplog.Type="LOGIN"
             suplog.save()
+            #  #maillog
+            # template=render_to_string('web/email_template.html',{'name':username})
+            # mail=EmailMessage(
+            #     'LOG IN ALERT',
+            #     template,
+            #     'aleki1313@proton.me',
+            #     [user.email]
+            #     )
+            # mail.fail_silently=False
+            # mail.send()
             return redirect(supdash)
             
         else:
@@ -147,3 +162,9 @@ def creationlogs(request):
     except EmptyPage:
         users = paginator.page(paginator.num_pages)
     return render(request,'web/usercreationlogs.html',context={'users':users})
+
+
+@login_required
+def graphicalreport(request):
+    data=3
+    return render(request,'web/graphicalreport.html',context={'datas':json.dumps(data)})
