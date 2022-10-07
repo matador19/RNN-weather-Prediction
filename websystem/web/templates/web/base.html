@@ -37,7 +37,7 @@
         </li>
         <li class="nav-item">
           {% if user.customuser.Role == "Admin" %}
-          <a class="nav-link" href="#">Weather Data</a>
+          <a class="nav-link" href="{% url 'weatherinput' %}">Weather Data</a>
           {% else %}
           <a class="nav-link" href="{% url 'graphicalreport' %}">Graphical reports</a>
           {% endif %}

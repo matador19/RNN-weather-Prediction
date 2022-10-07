@@ -1,0 +1,43 @@
+{% extends 'web/base.html' %}
+{% block content %}
+{% if user.customuser.Role == "Admin" %}
+
+{% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{message}}</strong> 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+      {% endif %}
+	<form method="POST">
+		{% csrf_token %}
+		{{ weatherform }} 
+    <br/>                   
+		<button class="btn btn-primary mt-3" type="submit">SUBMIT</button>
+	</form>
+</br>
+
+<table class="table table-striped table-dark">
+    <tr>
+    <th class="thead-dark">WeatherId</th>
+    <th class="thead-dark">USER</th>
+    <th class="thead-dark">TEMPERATURE</th>
+    <th class="thead-dark">TIME</th>
+    </tr>
+{%for weatherdetail in Weatherdetails %}
+<tr>
+    <td >{{weatherdetail.WeatherId}}</td>
+    <td >{{weatherdetail.Initiator}}</td>
+    <td >{{weatherdetail.Temperature}}</td>
+    <td >{{weatherdetail.CreationDate}}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<div class="container" style="display:flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh;">
+<h1> You are not an admin. Please Log in as Admin </h1>
+<a href="{% url 'logout' %}">LOGIN AGAIN</a>
+</div>
+{% endif %}
+{% endblock %}

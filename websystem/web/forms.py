@@ -1,7 +1,9 @@
+from dataclasses import field
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from web.models import CustomUser
+from django.forms import FloatField, ModelForm,NumberInput
+from web.models import CustomUser,Weatherdata
 
 class NewUserForm(UserCreationForm):
     email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'class':'form-control'}))
@@ -34,3 +36,20 @@ class NewUserForm(UserCreationForm):
         if commit:
             user.save()
         return user
+    
+
+class Weatherinput(ModelForm):
+    class Meta:
+        model=Weatherdata
+        fields=("Temperature",)
+
+        widgets = {
+        'Temperature': forms.NumberInput(attrs={
+            'class': "form-control",
+            'style': 'max-width: 300px;',
+            'placeholder': 'Temperature',
+            'min': '-30',
+            'max': '60',
+            'step': '0.5'
+            })
+        }

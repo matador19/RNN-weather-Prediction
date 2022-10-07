@@ -29,8 +29,16 @@ class Ticket(models.Model):
     TicketId=models.AutoField(primary_key=True)
     CreationDate=models.DateTimeField(default=datetime.now().strftime(("%d.%m.%Y %H:%M:%S")))
     Status=models.BooleanField()
-    Initiator=models.OneToOneField(User,on_delete=models.CASCADE)
+    Initiator=models.ForeignKey(User,on_delete=models.CASCADE,unique=False)
 
     def __str__(self):
         return self.TicketId
 
+class Weatherdata(models.Model):
+    WeatherId=models.AutoField(primary_key=True)
+    CreationDate=models.DateTimeField(auto_now_add=True)
+    Temperature=models.FloatField()
+    Initiator=models.ForeignKey(User,on_delete=models.CASCADE,unique=False)
+
+    def __str__(self):
+        return str(self.WeatherId)

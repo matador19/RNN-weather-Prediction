@@ -5,8 +5,8 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .forms import NewUserForm
-from web.models import CustomUser,Logs
+from .forms import NewUserForm,Weatherinput
+from web.models import CustomUser,Logs,Weatherdata
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
@@ -38,7 +38,8 @@ def register_request(request):
             createlog.save()
 
             return redirect(admindash)
-        messages.error(request, "Unsuccessful registration. Invalid information.")
+        else:
+            messages.error(request, "Unsuccessful registration. Invalid information.")
     form = NewUserForm()
     return render (request=request, template_name="web/createuser.html", context={"register_form":form})
     
@@ -94,7 +95,7 @@ def loginform(request):
             
         else:
             # No backend authenticated the credentials
-            messages.success(request,("LOGIN CREDENTIALS ARE INCORRECT"))
+            messages.error(request,("LOGIN CREDENTIALS ARE INCORRECT"))
             return redirect(loginform)
         
     else:
@@ -168,3 +169,20 @@ def creationlogs(request):
 def graphicalreport(request):
     data=3
     return render(request,'web/graphicalreport.html',context={'datas':json.dumps(data)})
+
+@login_required
+def weatherinput(request):
+    if request.method == 'POST':
+        form=Weatherinput(request.POST)
+        if form.is_valid():
+            Weatherdetails=Weatherdata()
+            Weatherdetails.Temperature=form.cleaned_data['Temperature']
+            Weatherdetails.Initiator=request.user
+            Weatherdetails.save()
+            messages.success(request, "Details added successful." )
+        else:
+            messages.error(request, "Something went wrong.")
+    form=Weatherinput()
+    Weatherdetails=Weatherdata.objects.all().order_by('-WeatherId')[:10]
+    print(Weatherdetails)
+    return render(request,'web/weatherinput.html',context={'weatherform':form,'Weatherdetails':Weatherdetails})
