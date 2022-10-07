@@ -1,4 +1,40 @@
-console.log(logs)
+let url = '/weatherAPI';
+fetch(url)
+.then(
+  response =>{
+  results=response.json()
+  return results;
+})
+.then(weathertemps)
+function weathertemps(data){
+  temps=[];
+  dates=[];
+  for(i in data){
+    dates[i]=JSON.stringify(data[i].CreationDate)
+    temps[i]=+String(data[i].Temperature)
+  }
+  console.log(dates)
+  new Chart("myChartB", {
+    type: 'bar', //this denotes tha type of chart
+
+    data: {// values on X-Axis
+      labels: dates, 
+       datasets: [
+        {
+          label: "Temperature",
+          data: temps,
+          backgroundColor: 'limegreen'
+        }  
+        
+      ]
+    }
+    
+  });
+
+
+}
+
+
   new Chart("myChartA", {
     type: 'line', //this denotes tha type of chart
 
@@ -28,30 +64,6 @@ console.log(logs)
     
   });
 
-  new Chart("myChartB", {
-    type: 'bar', //this denotes tha type of chart
-
-    data: {// values on X-Axis
-      labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
-      '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17',], 
-       datasets: [
-        {
-          label: "Sales",
-          data: ['467','576', '572', '79', '92',
-               '574', '573', '576'],
-          backgroundColor: 'black'
-        },
-        {
-          label: "Profit",
-          data: ['542', '542', '536', '327', '17',
-                 '0.00', '538', '541'],
-          backgroundColor: 'limegreen'
-        }  
-        
-      ]
-    }
-    
-  });
 
   new Chart("myChartC", {
     type: 'bar', //this denotes tha type of chart

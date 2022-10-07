@@ -14,5 +14,6 @@ urlpatterns+=[
     path("userlogs",views.userlogs,name="userlogs"),
     path("creationlogs",views.creationlogs,name="creationlogs"),
     path("graphicalreport",views.graphicalreport,name="graphicalreport"),
-    path("weatherinput",views.weatherinput,name="weatherinput")
+    path("weatherinput",views.weatherinput,name="weatherinput"),
+    path("weatherAPI",views.weatherapi,name="weatherAPI")
 ]

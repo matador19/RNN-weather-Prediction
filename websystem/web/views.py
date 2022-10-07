@@ -1,6 +1,6 @@
 from multiprocessing import context
 from django.shortcuts import render,redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -167,8 +167,7 @@ def creationlogs(request):
 
 @login_required
 def graphicalreport(request):
-    data=3
-    return render(request,'web/graphicalreport.html',context={'datas':json.dumps(data)})
+    return render(request,'web/graphicalreport.html')
 
 @login_required
 def weatherinput(request):
@@ -186,3 +185,8 @@ def weatherinput(request):
     Weatherdetails=Weatherdata.objects.all().order_by('-WeatherId')[:10]
     print(Weatherdetails)
     return render(request,'web/weatherinput.html',context={'weatherform':form,'Weatherdetails':Weatherdetails})
+
+
+def weatherapi(request):
+    data=list(Weatherdata.objects.values())
+    return JsonResponse(data,safe=False)
