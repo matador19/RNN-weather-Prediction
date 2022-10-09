@@ -1,0 +1,27 @@
+{% extends 'web/base.html' %}
+{% block content %}
+{% if user.customuser.Role == "Admin" %}
+
+<h2> UPDATE USER</h2>
+{% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{message}}</strong> 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+      {% endif %}
+	<form method="POST">
+		{% csrf_token %}
+		{{ update_form }} 
+    <br/>                   
+		<button class="btn btn-primary mt-3" type="submit">Update User</button>
+	</form>
+
+{% else %}
+<div class="container" style="display:flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh;">
+<h1> You are not an admin. Please Log in as Admin </h1>
+<a href="{% url 'logout' %}">LOGIN AGAIN</a>
+</div>
+{% endif %}
+{% endblock %}

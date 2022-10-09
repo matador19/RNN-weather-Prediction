@@ -15,5 +15,8 @@ urlpatterns+=[
     path("creationlogs",views.creationlogs,name="creationlogs"),
     path("graphicalreport",views.graphicalreport,name="graphicalreport"),
     path("weatherinput",views.weatherinput,name="weatherinput"),
-    path("weatherAPI",views.weatherapi,name="weatherAPI")
+    path("weatherAPI",views.weatherapi,name="weatherAPI"),
+    path("users",views.userslist,name="users"),
+    path("users/<int:id>",views.useridentity,name="useridentity"),
+    path("deleteuser/<int:id>",views.deleteuser,name="deleteuser")
 ]

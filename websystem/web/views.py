@@ -30,7 +30,6 @@ def register_request(request):
                 user=User,
                 Role=role
             )
-            messages.success(request, "Registration successful." )
             createlog=Logs()
             createlog.Change=request.user.username+" created user " + createduser+" as a "+role
             createlog.Type="User creation"
@@ -190,3 +189,38 @@ def weatherinput(request):
 def weatherapi(request):
     data=list(Weatherdata.objects.values())
     return JsonResponse(data,safe=False)
+
+def userslist(request):
+    allusers=User.objects.exclude(username=request.user.username)
+    return render(request,'web/users.html',context={'users':allusers})
+
+def useridentity(request,id):
+    useridentity=User.objects.get(pk=id)
+    if request.method == "POST":
+        form=NewUserForm(request.POST,instance=useridentity)
+        if form.is_valid():
+            Users=form.save()
+            createduser=form.cleaned_data.get('username')
+            role=form.cleaned_data.get('Role')
+            CustomUser.objects.filter(user=Users).update(Role=role)
+            createlog=Logs()
+            createlog.Change=request.user.username+" updated user " +useridentity.username+" to "+ createduser+" as a "+role
+            createlog.Type="User creation"
+            createlog.Initiator=request.user
+            createlog.save()
+
+            return redirect(admindash)
+        else:
+            messages.error(request, "Unsuccessful update. Invalid information.")
+    form=NewUserForm(instance=useridentity)
+    return render(request,'web/userupdate.html',context={'update_form':form})
+
+def deleteuser(request,id):
+    useridentity=User.objects.get(pk=id)
+    User.objects.get(pk=id).delete()
+    createlog=Logs()
+    createlog.Change=request.user.username+" deleted user " +useridentity.username
+    createlog.Type="User creation"
+    createlog.Initiator=request.user
+    createlog.save()
+    return redirect(admindash)
