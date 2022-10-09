@@ -55,6 +55,9 @@
       <span class="navbar-text">
         <a class="nav-link" href="#">{{ user.username }}</a>
       </span>
+      <span class="navbar-text">
+        <a class="nav-link" href="{% url 'changepass' %}">Change password</a>
+      </span>
       <span style="margin-left: 1vh ;">
         <a class="nav-link" href="{% url 'logout' %}">LOG OUT</a>
       </span>

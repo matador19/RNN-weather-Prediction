@@ -1,5 +1,8 @@
+from re import template
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from . import views
+from .views import changepass,passwordreset  #for class based views
 
 urlpatterns = [
     path("", views.home,name="home"),
@@ -18,5 +21,13 @@ urlpatterns+=[
     path("weatherAPI",views.weatherapi,name="weatherAPI"),
     path("users",views.userslist,name="users"),
     path("users/<int:id>",views.useridentity,name="useridentity"),
-    path("deleteuser/<int:id>",views.deleteuser,name="deleteuser")
+    path("deleteuser/<int:id>",views.deleteuser,name="deleteuser"),
+
+
+    path("passchange/",changepass.as_view(template_name='web/userpass/password-change.html'),name="changepass"),
+    path("passsuccess/",views.password_success,name="password_success"),
+    path("resetpassword/",passwordreset.as_view(template_name='web/userpass/password-reset-view.html'),name="password_reset"),
+    path("resetpassword_sent/",auth_views.PasswordResetDoneView.as_view(template_name='web/userpass/password-reset-done.html'),name="password_reset_done"),
+    path("reset/<uidb64>/<token>/",auth_views.PasswordResetConfirmView.as_view(template_name='web/userpass/password-reset-confirm.html'),name="password_reset_confirm"),
+    path("resetpassowrd_complete/",auth_views.PasswordResetCompleteView.as_view(template_name='web/userpass/password-complete.html'),name="password_reset_complete")
 ]

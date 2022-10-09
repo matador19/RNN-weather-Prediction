@@ -1,11 +1,13 @@
-from multiprocessing import context
+from distutils.log import Log
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.views import PasswordChangeView,PasswordResetView,PasswordResetConfirmView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .forms import NewUserForm,Weatherinput
+from django.urls import reverse_lazy
+from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform
 from web.models import CustomUser,Logs,Weatherdata
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -64,7 +66,7 @@ def loginform(request):
                 mail=EmailMessage(
                     'LOG IN ALERT',
                     template,
-                    'aleki1313@proton.me',
+                    'xyzpowercompany@gmail.com',
                     [user.email]
                     )
                 mail.fail_silently=False
@@ -85,7 +87,7 @@ def loginform(request):
             # mail=EmailMessage(
             #     'LOG IN ALERT',
             #     template,
-            #     'aleki1313@proton.me',
+            #     'xyzpowercompany@gmail.com',
             #     [user.email]
             #     )
             # mail.fail_silently=False
@@ -126,7 +128,10 @@ def supdash(request):
 
 @login_required
 def userlogs(request):
-    logs=Logs.objects.exclude(Type='User creation').order_by('-LogId') # for all logins to be seen by all admins
+    exclude_list =['User creation','User update','User delete','Password edit']
+    logs=Logs.objects.all()
+    for item in exclude_list:
+        logs=logs.exclude(Type=item).order_by('-LogId') # for all logins to be seen by all admins
     suplogins=Logs.objects.filter(Initiator=request.user).order_by('-LogId')# logins for  specific supervisor
     page = request.GET.get('page', 1)
 
@@ -152,7 +157,11 @@ def userlogs(request):
 
 @login_required
 def creationlogs(request):
-    logs=Logs.objects.filter(Type='User creation').order_by('-LogId')
+    filtered_items=['LOGIN','LOGOUT']
+    logs=Logs.objects.all()
+    for item in filtered_items:
+        logs=logs.exclude(Type=item).order_by('-LogId')
+    print(logs)
     page = request.GET.get('page', 1)
     paginator = Paginator(logs, 25)
     try:
@@ -205,7 +214,7 @@ def useridentity(request,id):
             CustomUser.objects.filter(user=Users).update(Role=role)
             createlog=Logs()
             createlog.Change=request.user.username+" updated user " +useridentity.username+" to "+ createduser+" as a "+role
-            createlog.Type="User creation"
+            createlog.Type="User update"
             createlog.Initiator=request.user
             createlog.save()
 
@@ -220,7 +229,24 @@ def deleteuser(request,id):
     User.objects.get(pk=id).delete()
     createlog=Logs()
     createlog.Change=request.user.username+" deleted user " +useridentity.username
-    createlog.Type="User creation"
+    createlog.Type="User deletion"
     createlog.Initiator=request.user
     createlog.save()
     return redirect(admindash)
+
+class changepass(PasswordChangeView):
+    form_class=Changepass
+    success_url=reverse_lazy('password_success')
+
+def password_success(request):
+    createlog=Logs()
+    createlog.Change=request.user.username+" changed thier password"
+    createlog.Type="Password edit"
+    createlog.Initiator=request.user
+    createlog.save()
+    return render(request,'web/userpass/password-success.html')
+    
+class passwordreset(PasswordResetView):
+    form_class=passwordresetform
+    success_url=reverse_lazy('password_reset_done')
+
