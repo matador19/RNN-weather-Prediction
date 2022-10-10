@@ -197,7 +197,13 @@ def weatherinput(request):
 
 
 def weatherapi(request):
-    data=list(Weatherdata.objects.values())
+    from datetime import datetime
+    fetchdata=Weatherdata.objects.all()
+    data={}
+    for i in range(fetchdata.count()):
+        data[i]={'CreationDate':fetchdata[i].CreationDate.strftime("%d-%m-%Y")}
+        data[i]['Temperature']=fetchdata[i].Temperature
+    print(data)
     return JsonResponse(data,safe=False)
 
 def userslist(request):

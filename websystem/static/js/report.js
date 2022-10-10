@@ -21,12 +21,23 @@ function weathertemps(data){
       labels: dates, 
        datasets: [
         {
-          label: "Temperature",
+          label: "Temperature in C",
           data: temps,
-          backgroundColor: 'limegreen'
+          backgroundColor: 'yellow'
         }  
         
       ]
+    },
+    options: {
+      scales: {
+          yAxes:[{
+            ticks:{
+              min: 0,
+              max: 35,
+              step: 2
+            }
+          }]
+      }
     }
     
   });
@@ -110,7 +121,7 @@ function powerconsumed(data){
       scales: {
           yAxes:[{
             ticks:{
-              Min: 0,
+              min: 0,
               max: 100,
               step: 1
             }
