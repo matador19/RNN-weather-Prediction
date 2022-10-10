@@ -42,3 +42,19 @@ class Weatherdata(models.Model):
 
     def __str__(self):
         return str(self.WeatherId)
+
+class Powerconsumed(models.Model):
+    PowerConsumeId=models.AutoField(primary_key=True)
+    CreationDate=models.DateTimeField(auto_now_add=True)
+    kWh=models.FloatField()
+
+    def __str__(self):
+        return str(self.PowerConsumeId)
+
+class Powerconsumeddaily(models.Model):
+    PowerConsumeddailyId=models.AutoField(primary_key=True)
+    CreationDate=models.DateTimeField(auto_now_add=True)
+    kWh=models.FloatField()
+
+    def __str__(self):
+        return str(self.PowerConsumeId)

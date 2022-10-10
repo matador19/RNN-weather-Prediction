@@ -34,26 +34,50 @@ function weathertemps(data){
 
 }
 
+fetch('/powerinputinten')
+.then(
+  response =>{
+  results=response.json()
+  return results;
+})
+.then(powerconsumed)
+
+function powerconsumed(data){
+  var currentdate = new Date()
+  count=[];
+  kWh=[];
+  threshold=[];
+  dailyconsumption=[]
+  dates=[]
+  for(i in data['power consumed today']){
+    kWh[i]=JSON.stringify(data['power consumed today'][i])
+    count[i]=i
+    //set for now
+    threshold[i]=10
+  }
+
+  for(i in data['power consumed daily']){
+    dailyconsumption[i]=String(Object.values(data['power consumed daily'][i]))
+    dates[i]=Object.keys(data['power consumed daily'][i])
+  }
+
 
   new Chart("myChartA", {
     type: 'line', //this denotes tha type of chart
 
     data: {// values on X-Axis
-      labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
-      '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17',], 
+      labels: count, 
        datasets: [
         {
-          label: "Sales",
-          data: ['467','576', '572', '79', '92',
-               '574', '573', '576'],
+          label: "Consumption",
+          data: kWh,
           borderColor: 'blue',
           backgroundColor: 'blue',
           fill:false
         },
         {
-          label: "Profit",
-          data: ['542', '542', '536', '327', '17',
-                 '0.00', '538', '541'],
+          label: "Threshold",
+          data: threshold,
           borderColor: 'limegreen',
           backgroundColor: 'limegreen',
           fill:false
@@ -65,34 +89,43 @@ function weathertemps(data){
   });
 
 
+  
   new Chart("myChartC", {
     type: 'bar', //this denotes tha type of chart
 
     data: {// values on X-Axis
-      labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
-      '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17',], 
+      labels: dates, 
        datasets: [
         {
-          label: "Sales",
-          data: ['467','576', '572', '79', '92',
-               '574', '573', '576'],
-          borderColor: 'yellow',
-          backgroundColor: 'yellow',
+          label: "Daily consumption",
+          data: dailyconsumption,
+          borderColor: 'purple',
+          backgroundColor: 'purple',
           fill:false
-        },
-        {
-          label: "Profit",
-          data: ['542', '542', '536', '327', '17',
-                 '0.00', '538', '541'],
-          borderColor: 'green',
-          backgroundColor: 'green',
-          fill:false
-        }  
+        }
         
       ]
+    },
+    options: {
+      scales: {
+          yAxes:[{
+            ticks:{
+              Min: 0,
+              max: 100,
+              step: 1
+            }
+          }]
+      }
     }
     
   });
+  console.log(dailyconsumption)
+}
+
+
+  
+
+
 
   new Chart("myChartD", {
     type: 'line', //this denotes tha type of chart

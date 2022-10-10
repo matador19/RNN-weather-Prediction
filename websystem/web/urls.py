@@ -22,6 +22,7 @@ urlpatterns+=[
     path("users",views.userslist,name="users"),
     path("users/<int:id>",views.useridentity,name="useridentity"),
     path("deleteuser/<int:id>",views.deleteuser,name="deleteuser"),
+    path("powerinputinten",views.checkpowerconsumptioninten,name="powerinputinten"),
 
 
     path("passchange/",changepass.as_view(template_name='web/userpass/password-change.html'),name="changepass"),

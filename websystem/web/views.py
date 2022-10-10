@@ -1,4 +1,3 @@
-from distutils.log import Log
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth import authenticate,login,logout
@@ -7,13 +6,15 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
+from requests import request
 from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform
-from web.models import CustomUser,Logs,Weatherdata
+from web.models import CustomUser,Logs,Weatherdata,Powerconsumed,Powerconsumeddaily
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json 
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
@@ -250,3 +251,51 @@ class passwordreset(PasswordResetView):
     form_class=passwordresetform
     success_url=reverse_lazy('password_reset_done')
 
+
+
+
+@csrf_exempt
+def checkpowerconsumptioninten(request):
+    def archive():
+        values=Powerconsumed.objects.all().last()
+        sum=values.kWh
+        summed=Powerconsumeddaily()
+        summed.kWh=sum
+        summed.save()
+        Powerconsumed.objects.all().delete()
+
+    powerconsumed=Powerconsumed()
+    from datetime import datetime
+    now = datetime.now()
+    today=now.strftime("%d")
+    val={'power consumed':0}
+    if request.method=="POST":
+        data=request.body
+        data=json.loads(data)
+        powerconsumed.kWh=data['power consumed']
+        powerconsumed.save()
+        currentconsumption=Powerconsumed.objects.all().last()
+        if currentconsumption!=None:
+            latestrecord=currentconsumption.CreationDate.strftime("%d")
+            if today != latestrecord:
+                archive()
+
+    currentconsumption=Powerconsumed.objects.all().last()
+    if currentconsumption!=None:
+        latestrecord=currentconsumption.CreationDate.strftime("%d")
+        if today == latestrecord:
+            vals={}
+            val=Powerconsumed.objects.all()
+            for i in range(val.count()):
+                vals[i]=val[i].kWh
+            val=json.loads(json.dumps({'power consumed today':vals}))
+
+        else:
+            archive()
+    daily_usage=Powerconsumeddaily.objects.all()
+    val['power consumed daily']={}
+    for x in range(daily_usage.count()):
+        dateformat=daily_usage[x].CreationDate.strftime("%m-%d")
+        val['power consumed daily'][x]={dateformat:daily_usage[x].kWh}
+    #print(val)
+    return JsonResponse(val,safe=False)
