@@ -83,18 +83,29 @@ function powerconsumed(data){
           label: "Consumption",
           data: kWh,
           borderColor: 'blue',
-          backgroundColor: 'blue',
+          backgroundColor: 'limegreen',
           fill:false
         },
         {
           label: "Threshold",
           data: threshold,
-          borderColor: 'limegreen',
-          backgroundColor: 'limegreen',
+          borderColor: 'red',
+          backgroundColor: 'magenta',
           fill:false
         }  
         
       ]
+    },
+    options: {
+      scales: {
+          yAxes:[{
+            ticks:{
+              min: 0,
+              max: 20,
+              step: 0.5
+            }
+          }]
+      }
     }
     
   });
