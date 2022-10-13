@@ -1,9 +1,9 @@
-from dataclasses import field
+from dataclasses import field, fields
 from django import forms
 from django.contrib.auth.forms import UserCreationForm,PasswordChangeForm,PasswordResetForm
 from django.contrib.auth.models import User
 from django.forms import FloatField, ModelForm,NumberInput
-from web.models import CustomUser,Weatherdata
+from web.models import CustomUser,Weatherdata,Ticket
 
 class NewUserForm(UserCreationForm):
     email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'class':'form-control'}))
@@ -65,3 +65,16 @@ class Changepass(PasswordChangeForm):
 class passwordresetform(PasswordResetForm):
     email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'class':'form-control'}))
 
+
+class Ticketform(ModelForm):
+    class Meta:
+        model=Ticket
+        fields=('details',)
+
+        widgets = {
+        'details': forms.TextInput(attrs={
+            'class': "form-control",
+            'style': 'max-width: 300px;',
+            'placeholder': 'Enter message here'
+            })
+        }

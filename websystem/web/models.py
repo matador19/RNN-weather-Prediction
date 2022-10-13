@@ -1,6 +1,7 @@
 from asyncio.windows_events import NULL
 from datetime import datetime
 from statistics import mode
+from unittest.util import _MAX_LENGTH
 from xmlrpc.client import _datetime_type
 from django.db import models
 from django.contrib.auth.models import User
@@ -27,8 +28,9 @@ class Logs(models.Model):
 
 class Ticket(models.Model):
     TicketId=models.AutoField(primary_key=True)
-    CreationDate=models.DateTimeField(default=datetime.now().strftime(("%d.%m.%Y %H:%M:%S")))
+    CreationDate=models.DateTimeField(auto_now_add=True)
     Status=models.BooleanField()
+    details=models.CharField(max_length=100)
     Initiator=models.ForeignKey(User,on_delete=models.CASCADE,unique=False)
 
     def __str__(self):
@@ -58,3 +60,14 @@ class Powerconsumeddaily(models.Model):
 
     def __str__(self):
         return str(self.PowerConsumeId)
+
+class TicketResponse(models.Model):
+    TicketResponseId=models.AutoField(primary_key=True)
+    CreationDate=models.DateTimeField(auto_now_add=True)
+    Status=models.BooleanField()
+    details=models.CharField(max_length=100)
+    TicketComment=models.ForeignKey(Ticket,on_delete=models.CASCADE,unique=False)
+    Initiator=models.ForeignKey(User,on_delete=models.CASCADE,unique=False)
+
+    def __str__(self):
+        return self.TicketResponseId

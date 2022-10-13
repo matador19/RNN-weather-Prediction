@@ -7,8 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from requests import request
-from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform
-from web.models import CustomUser,Logs,Weatherdata,Powerconsumed,Powerconsumeddaily
+from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform,Ticketform
+from web.models import CustomUser,Logs,Weatherdata,Powerconsumed,Powerconsumeddaily,Ticket
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
@@ -83,16 +83,19 @@ def loginform(request):
             suplog.Initiator=user
             suplog.Type="LOGIN"
             suplog.save()
-            #  #maillog
-            # template=render_to_string('web/email_template.html',{'name':username})
-            # mail=EmailMessage(
-            #     'LOG IN ALERT',
-            #     template,
-            #     'xyzpowercompany@gmail.com',
-            #     [user.email]
-            #     )
-            # mail.fail_silently=False
-            # mail.send()
+            #maillog
+            try:
+                template=render_to_string('web/email_template.html',{'name':username})
+                mail=EmailMessage(
+                    'LOG IN ALERT',
+                    template,
+                    'xyzpowercompany@gmail.com',
+                    [user.email]
+                    )
+                mail.fail_silently=False
+                mail.send()
+            except:
+                pass
             return redirect(supdash)
             
         else:
@@ -305,3 +308,17 @@ def checkpowerconsumptioninten(request):
         val['power consumed daily'][x]={dateformat:daily_usage[x].kWh}
     #print(val)
     return JsonResponse(val,safe=False)
+
+
+def TicketCreation(request):
+    if request.method=="POST": 
+        form = Ticketform(request.POST)
+        if form.is_valid():
+            Ticketcreation=Ticket()
+            Ticketcreation.Status=False
+            Ticketcreation.details=form.cleaned_data.get('details')
+            Ticketcreation.Initiator=request.user
+            Ticketcreation.save()
+    form=Ticketform()
+    #form = NewUserForm()
+    return render(request=request, template_name="web/Ticketing/CreateTicket.html", context={"form":form})

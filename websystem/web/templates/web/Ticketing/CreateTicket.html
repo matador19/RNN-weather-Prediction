@@ -1,0 +1,27 @@
+{% extends 'web/base.html' %}
+{% block content %}
+{% if user.customuser.Role == "Supervisor" %}
+<h4> Create your ticket here</h4>
+
+{% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{message}}</strong> 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+      {% endif %}
+	<form method="POST">
+		{% csrf_token %}
+		{{ form }} 
+    <br/>                   
+		<button class="btn btn-primary mt-3" type="submit">Create Ticket</button>
+	</form>
+
+{% else %}
+<div class="container" style="display:flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh;">
+<h1> You are not an Supervisor. Please Log in as Supervisor </h1>
+<a href="{% url 'logout' %}">LOGIN AGAIN</a>
+</div>
+{% endif %}
+{% endblock %}
