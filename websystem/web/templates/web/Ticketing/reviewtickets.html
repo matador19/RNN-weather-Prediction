@@ -7,7 +7,8 @@
     <th class="thead-dark">Date</th>
     <th class="thead-dark">Details</th>
     <th class="thead-dark">Status</th>
-    <th class="thead-dark">ACTION</th>
+    <th class="thead-dark">Response</th>
+    <th class="thead-dark">Action</th>
     </tr>
 {%for ticket in tickets %}
 <tr>
@@ -16,10 +17,17 @@
     <td >{{ticket.details}}</td>
     {% if ticket.Status %}
     <td >Resolved</td>
+    {% for response in responses %}
+    {% if  response.TicketComment == ticket %}
+    <td>{{response.details}}</td>
+    {% endif %}
+    {% endfor %}
+    <td>Action taken</td>
     {% else %}
     <td>Pending</td>
-    {% endif %}
+    <td>Awaiting response</td>
     <td><a href="{% url 'revieweachticket' ticket.TicketId %}" class="btn btn-primary" role="button">Resolve</a></td>
+    {% endif %}
 </tr>
 {% endfor %}
 </table>

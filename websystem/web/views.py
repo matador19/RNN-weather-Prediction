@@ -322,9 +322,9 @@ def TicketCreation(request):
             Ticketcreation.Initiator=request.user
             Ticketcreation.save()
     form=Ticketform()
-    ticket=Ticket.objects.filter(Initiator=request.user)[:10]
-    #responses=TicketResponse.objects.filter(TicketComment=ticket)
-    return render(request=request, template_name="web/Ticketing/CreateTicket.html", context={"form":form,'tickets':ticket})
+    ticket=Ticket.objects.filter(Initiator=request.user).order_by('-TicketId')[:10]
+    responses=TicketResponse.objects.all()
+    return render(request=request, template_name="web/Ticketing/CreateTicket.html", context={"form":form,'tickets':ticket,'responses':responses})
 
 @login_required
 def deleteweather(request,id):
@@ -342,8 +342,9 @@ def deleteticket(request,id):
 
 @login_required
 def reviewticket(request):
-    tickets=Ticket.objects.all()
-    return render(request,'web/Ticketing/reviewtickets.html',context={'tickets':tickets})
+    tickets=Ticket.objects.all().order_by('-TicketId')[:10]
+    responses=TicketResponse.objects.all()
+    return render(request,'web/Ticketing/reviewtickets.html',context={'tickets':tickets,'responses':responses})
 
 @login_required
 def revieweachticket(request,id):
@@ -358,5 +359,7 @@ def revieweachticket(request,id):
             response.TicketComment=tickets
             response.Initiator=request.user
             response.save()
+            tickets.save()
+            return redirect(reviewticket)
     form=TicketResponseform()
     return render(request,'web/Ticketing/revieweachticket.html',context={'ticket':tickets,'form':form})

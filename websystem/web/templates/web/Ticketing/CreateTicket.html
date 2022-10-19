@@ -38,7 +38,13 @@
     {% else %}
     <td>Pending</td>
     {% endif %}
-    <td> I have seen your ticket. Thank you very much and I would like to hear more recommendations from you</td>
+    <td>
+    {% for response in responses %}
+    {% if  response.TicketComment == ticket %}
+    {{response.details}}
+    {% endif %}
+    {% endfor %}
+  </td>
     <td><button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmdelete">Delete</button></td>
 </tr>
 
