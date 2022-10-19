@@ -30,7 +30,7 @@
         </li>
         <li class="nav-item">
           {% if user.customuser.Role == "Admin" %}
-          <a class="nav-link" href="#">Review Tickets</a>
+          <a class="nav-link" href="{% url 'reviewticket' %}">Review Tickets</a>
           {% else %}
           <a class="nav-link" href="#">Control Power (Manual Override!)</a>
           {% endif %}

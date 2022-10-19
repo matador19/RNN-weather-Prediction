@@ -24,6 +24,7 @@
     <th class="thead-dark">USER</th>
     <th class="thead-dark">TEMPERATURE</th>
     <th class="thead-dark">TIME</th>
+    <th class="thead-dark">ACTION</th>
     </tr>
 {%for weatherdetail in Weatherdetails %}
 <tr>
@@ -31,7 +32,29 @@
     <td >{{weatherdetail.Initiator}}</td>
     <td >{{weatherdetail.Temperature}}</td>
     <td >{{weatherdetail.CreationDate}}</td>
+    <td><button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmdelete">Delete</button></td>
 </tr>
+
+<!-- Modal form-->
+<div class="modal fade" id="confirmdelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="confirmdeleteLabel">CONFIRM DELETE</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger">Are you sure you want to delete the user?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">NO</button>
+        <a href="{% url 'deleteweather' weatherdetail.WeatherId %}" class="btn btn-danger" role="button">DELETE</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal form-->
 {% endfor %}
 </table>
 {% else %}

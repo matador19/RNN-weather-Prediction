@@ -1,0 +1,32 @@
+{% extends 'web/base.html' %}
+{% block content %}
+{% if user.customuser.Role == "Admin" %}
+<table class="table table-striped table-dark mt-2">
+    <tr>
+    <th class="thead-dark">TicketId</th>
+    <th class="thead-dark">Date</th>
+    <th class="thead-dark">Details</th>
+    <th class="thead-dark">Status</th>
+    <th class="thead-dark">ACTION</th>
+    </tr>
+{%for ticket in tickets %}
+<tr>
+    <td >{{ticket.TicketId}}</td>
+    <td >{{ticket.CreationDate}}</td>
+    <td >{{ticket.details}}</td>
+    {% if ticket.Status %}
+    <td >Resolved</td>
+    {% else %}
+    <td>Pending</td>
+    {% endif %}
+    <td><a href="{% url 'revieweachticket' ticket.TicketId %}" class="btn btn-primary" role="button">Resolve</a></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<div class="container" style="display:flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh;">
+<h1> You are not an admin. Please Log in as Admin </h1>
+<a href="{% url 'logout' %}">LOGIN AGAIN</a>
+</div>
+{% endif %}
+{% endblock %}

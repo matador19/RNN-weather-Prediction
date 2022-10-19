@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm,PasswordChangeForm,PasswordResetForm
 from django.contrib.auth.models import User
 from django.forms import FloatField, ModelForm,NumberInput
-from web.models import CustomUser,Weatherdata,Ticket
+from web.models import CustomUser,Weatherdata,Ticket,TicketResponse
 
 class NewUserForm(UserCreationForm):
     email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'class':'form-control'}))
@@ -72,9 +72,22 @@ class Ticketform(ModelForm):
         fields=('details',)
 
         widgets = {
-        'details': forms.TextInput(attrs={
+        'details': forms.Textarea(attrs={
             'class': "form-control",
-            'style': 'max-width: 300px;',
+            'style': 'max-width: 100rem;',
+            'placeholder': 'Enter message here'
+            })
+        }
+
+class TicketResponseform(ModelForm):
+    class Meta:
+        model=TicketResponse
+        fields=('details',)
+
+        widgets = {
+        'details': forms.Textarea(attrs={
+            'class': "form-control",
+            'style': 'max-width: 100rem;',
             'placeholder': 'Enter message here'
             })
         }

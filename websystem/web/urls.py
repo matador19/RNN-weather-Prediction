@@ -23,6 +23,10 @@ urlpatterns+=[
     path("users",views.userslist,name="users"),
     path("users/<int:id>",views.useridentity,name="useridentity"),
     path("deleteuser/<int:id>",views.deleteuser,name="deleteuser"),
+    path("deleteweather/<int:id>",views.deleteweather,name="deleteweather"),
+    path("deleteticket/<int:id>",views.deleteticket,name="deleteticket"),
+    path("reviewticket",views.reviewticket,name="reviewticket"),
+    path("revieweachticket/<int:id>",views.revieweachticket,name="revieweachticket"),
     path("powerinputinten",views.checkpowerconsumptioninten,name="powerinputinten"),
 
 

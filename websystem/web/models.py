@@ -34,7 +34,7 @@ class Ticket(models.Model):
     Initiator=models.ForeignKey(User,on_delete=models.CASCADE,unique=False)
 
     def __str__(self):
-        return self.TicketId
+        return str(self.TicketId)
 
 class Weatherdata(models.Model):
     WeatherId=models.AutoField(primary_key=True)
@@ -70,4 +70,4 @@ class TicketResponse(models.Model):
     Initiator=models.ForeignKey(User,on_delete=models.CASCADE,unique=False)
 
     def __str__(self):
-        return self.TicketResponseId
+        return str(self.TicketResponseId)

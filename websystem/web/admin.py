@@ -2,7 +2,7 @@ from django.contrib import admin
 from web.models import CustomUser
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
-from web.models import Logs,Weatherdata
+from web.models import Logs,Weatherdata,Ticket,TicketResponse
 # Register your models here.
 class AccountInLine(admin.StackedInline):
     model=CustomUser
@@ -17,3 +17,5 @@ admin.site.register(User,CustomizedUserAdmin)
 
 admin.site.register(Logs)
 admin.site.register(Weatherdata)
+admin.site.register(Ticket)
+admin.site.register(TicketResponse)

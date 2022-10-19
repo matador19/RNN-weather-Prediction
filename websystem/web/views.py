@@ -7,8 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from requests import request
-from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform,Ticketform
-from web.models import CustomUser,Logs,Weatherdata,Powerconsumed,Powerconsumeddaily,Ticket
+from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform,Ticketform,TicketResponseform
+from web.models import CustomUser,Logs,Weatherdata,Powerconsumed,Powerconsumeddaily,Ticket,TicketResponse
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
@@ -120,9 +120,11 @@ def logoutsuccess(request):
 def admindash(request):
     count_admin_user=User.objects.filter(customuser__Role="Admin").count()
     count_sup_user=User.objects.filter(customuser__Role="Supervisor").count()
-    
+    count_tickets=Ticket.objects.filter(Status=False).count()
     return render(request,'web/admindash.html',context={'count_admin_user':count_admin_user,
-                                                        'count_sup_user':count_sup_user})
+                                                        'count_sup_user':count_sup_user,
+                                                        'count_tickets':count_tickets})
+
 
 @login_required
 def supdash(request):
@@ -208,11 +210,11 @@ def weatherapi(request):
         data[i]['Temperature']=fetchdata[i].Temperature
     print(data)
     return JsonResponse(data,safe=False)
-
+@login_required
 def userslist(request):
     allusers=User.objects.exclude(username=request.user.username)
     return render(request,'web/users.html',context={'users':allusers})
-
+@login_required
 def useridentity(request,id):
     useridentity=User.objects.get(pk=id)
     if request.method == "POST":
@@ -233,7 +235,7 @@ def useridentity(request,id):
             messages.error(request, "Unsuccessful update. Invalid information.")
     form=NewUserForm(instance=useridentity)
     return render(request,'web/userupdate.html',context={'update_form':form})
-
+@login_required
 def deleteuser(request,id):
     useridentity=User.objects.get(pk=id)
     User.objects.get(pk=id).delete()
@@ -309,7 +311,7 @@ def checkpowerconsumptioninten(request):
     #print(val)
     return JsonResponse(val,safe=False)
 
-
+@login_required
 def TicketCreation(request):
     if request.method=="POST": 
         form = Ticketform(request.POST)
@@ -320,5 +322,41 @@ def TicketCreation(request):
             Ticketcreation.Initiator=request.user
             Ticketcreation.save()
     form=Ticketform()
-    #form = NewUserForm()
-    return render(request=request, template_name="web/Ticketing/CreateTicket.html", context={"form":form})
+    ticket=Ticket.objects.filter(Initiator=request.user)[:10]
+    #responses=TicketResponse.objects.filter(TicketComment=ticket)
+    return render(request=request, template_name="web/Ticketing/CreateTicket.html", context={"form":form,'tickets':ticket})
+
+@login_required
+def deleteweather(request,id):
+    Weatherdata.objects.get(pk=id).delete()
+    createlog=Logs()
+    createlog.Change=request.user.username+" deleted a weather entry "
+    createlog.Type="Weather deletion"
+    createlog.Initiator=request.user
+    createlog.save()
+    return redirect(weatherinput)
+@login_required
+def deleteticket(request,id):
+    Ticket.objects.get(pk=id).delete()
+    return redirect(TicketCreation)
+
+@login_required
+def reviewticket(request):
+    tickets=Ticket.objects.all()
+    return render(request,'web/Ticketing/reviewtickets.html',context={'tickets':tickets})
+
+@login_required
+def revieweachticket(request,id):
+    tickets=Ticket.objects.get(pk=id)
+    if request.method=="POST": 
+        form = TicketResponseform(request.POST)
+        if form.is_valid():
+            response=TicketResponse()
+            response.Status=True
+            tickets.Status=True
+            response.details=form.cleaned_data.get('details')
+            response.TicketComment=tickets
+            response.Initiator=request.user
+            response.save()
+    form=TicketResponseform()
+    return render(request,'web/Ticketing/revieweachticket.html',context={'ticket':tickets,'form':form})
