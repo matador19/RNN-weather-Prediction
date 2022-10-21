@@ -23,7 +23,7 @@ function weathertemps(data){
         {
           label: "Temperature in C",
           data: temps,
-          backgroundColor: 'yellow'
+          backgroundColor: 'orange'
         }  
         
       ]

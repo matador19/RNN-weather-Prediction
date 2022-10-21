@@ -1,3 +1,4 @@
+from re import X
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth import authenticate,login,logout
@@ -15,9 +16,12 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json 
 from django.views.decorators.csrf import csrf_exempt
+import joblib
+import numpy as np
+from keras.models import load_model
 
 
-# Create your views here.
+#Create your views here.
 def home(request):
     return render(request,'web/welcome.html')
 
@@ -197,7 +201,15 @@ def weatherinput(request):
             messages.error(request, "Something went wrong.")
     form=Weatherinput()
     Weatherdetails=Weatherdata.objects.all().order_by('-WeatherId')[:10]
-    print(Weatherdetails)
+    X_input=Weatherdata.objects.all().order_by('-WeatherId')[:5]
+    test=[]
+    for x in range(X_input.count()):
+        test.append(X_input[x].Temperature)
+    test=np.reshape(test,(-1,1))
+    test=np.reshape(test,(test.shape[1],test.shape[0],1))
+    model = load_model('model/model.h5')
+    result=model.predict(test)
+    print(result)
     return render(request,'web/weatherinput.html',context={'weatherform':form,'Weatherdetails':Weatherdetails})
 
 
@@ -206,7 +218,7 @@ def weatherapi(request):
     fetchdata=Weatherdata.objects.all()
     data={}
     for i in range(fetchdata.count()):
-        data[i]={'CreationDate':fetchdata[i].CreationDate.strftime("%d-%m-%Y")}
+        data[i]={'CreationDate':fetchdata[i].CreationDate.strftime("%d-%m")}
         data[i]['Temperature']=fetchdata[i].Temperature
     print(data)
     return JsonResponse(data,safe=False)
