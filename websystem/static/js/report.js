@@ -101,7 +101,7 @@ function powerconsumed(data){
           yAxes:[{
             ticks:{
               min: 0,
-              max: 20,
+              max: 50,
               step: 0.5
             }
           }]

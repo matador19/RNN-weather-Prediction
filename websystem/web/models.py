@@ -57,6 +57,16 @@ class Powerconsumeddaily(models.Model):
     PowerConsumeddailyId=models.AutoField(primary_key=True)
     CreationDate=models.DateTimeField(auto_now_add=True)
     kWh=models.FloatField()
+    ThresholdkWh=models.FloatField(null=True)
+
+    def __str__(self):
+        return str(self.PowerConsumeId)
+
+class Threshold(models.Model):
+    ThresholdId=models.AutoField(primary_key=True)
+    CreationDate=models.DateTimeField(auto_now_add=True)
+    weatherpred=models.FloatField(null=True)
+    ThresholdkWh=models.FloatField()
 
     def __str__(self):
         return str(self.PowerConsumeId)

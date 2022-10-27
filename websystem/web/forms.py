@@ -19,11 +19,13 @@ class NewUserForm(UserCreationForm):
         super(NewUserForm, self).__init__(*args,**kwargs)
 
         self.fields['username'].widget.attrs['class'] = 'form-control'
-        self.fields['password1'].widget.attrs['class'] = 'form-control'
-        self.fields['password2'].widget.attrs['class'] = 'form-control'
-
-        for fieldname in ['username', 'password1', 'password2']:
+        self.fields['username'].help_text = None
+        #Temporary path but prone to SQL injection from the from as the form is not hidden
+        for fieldname in ['password1', 'password2']:
             self.fields[fieldname].help_text = None
+            self.fields[fieldname].widget = forms.HiddenInput()
+        self.initial['password1'] = User.objects.make_random_password()
+        self.initial['password2'] = self.initial['password1']
         
 
 

@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from requests import request
 from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform,Ticketform,TicketResponseform
-from web.models import CustomUser,Logs,Weatherdata,Powerconsumed,Powerconsumeddaily,Ticket,TicketResponse
+from web.models import CustomUser,Logs,Weatherdata,Powerconsumed,Powerconsumeddaily,Ticket,TicketResponse,Threshold
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
@@ -27,11 +27,14 @@ def home(request):
 
    
 def register_request(request):
+    
     if request.method == "POST":
         form = NewUserForm(request.POST)
         if form.is_valid():
             User=form.save()
             createduser=form.cleaned_data.get('username')
+            useremail=form.cleaned_data.get('email')
+            password1=form.cleaned_data.get('password1')
             role=form.cleaned_data.get('Role')
             CustomUser.objects.create(
                 user=User,
@@ -42,6 +45,21 @@ def register_request(request):
             createlog.Type="User creation"
             createlog.Initiator=request.user
             createlog.save()
+
+
+            try:
+                #maillog
+                template=render_to_string('web/usercreation_email.html',{'name':createduser,'password':password1})
+                mail=EmailMessage(
+                    'USER CREATION AT XYZ',
+                    template,
+                    'xyzpowercompany@gmail.com',
+                    [useremail]
+                    )
+                mail.fail_silently=False
+                mail.send()
+            except:
+                pass
 
             return redirect(admindash)
         else:
@@ -202,14 +220,21 @@ def weatherinput(request):
     form=Weatherinput()
     Weatherdetails=Weatherdata.objects.all().order_by('-WeatherId')[:10]
     X_input=Weatherdata.objects.all().order_by('-WeatherId')[:5]
-    test=[]
-    for x in range(X_input.count()):
-        test.append(X_input[x].Temperature)
-    test=np.reshape(test,(-1,1))
-    test=np.reshape(test,(test.shape[1],test.shape[0],1))
-    model = load_model('model/model.h5')
-    result=model.predict(test)
-    print(result)
+    try:
+        test=[]
+        for x in range(X_input.count()):
+            test.append(X_input[x].Temperature)
+        test=np.reshape(test,(-1,1))
+        test=np.reshape(test,(test.shape[1],test.shape[0],1))
+        model = load_model('model/model.h5')
+        result=model.predict(test)
+        result=result.flatten()
+        createthreshold=Threshold()
+        createthreshold.weatherpred=result[0]
+        createthreshold.ThresholdkWh=1.3194205*result[0]+3.14159
+        createthreshold.save()
+    except:
+        pass
     return render(request,'web/weatherinput.html',context={'weatherform':form,'Weatherdetails':Weatherdetails})
 
 
@@ -282,8 +307,10 @@ def checkpowerconsumptioninten(request):
     def archive():
         values=Powerconsumed.objects.all().last()
         sum=values.kWh
+        thresholdkWh=Threshold.objects.all().last()
         summed=Powerconsumeddaily()
         summed.kWh=sum
+        summed.ThresholdkWh=thresholdkWh.ThresholdkWh
         summed.save()
         Powerconsumed.objects.all().delete()
 
@@ -292,6 +319,9 @@ def checkpowerconsumptioninten(request):
     now = datetime.now()
     today=now.strftime("%d")
     val={'power consumed':0}
+    threshobj=Threshold.objects.all().last()
+    thresh=threshobj.ThresholdkWh
+    print(thresh)
     if request.method=="POST":
         data=request.body
         data=json.loads(data)
@@ -307,12 +337,20 @@ def checkpowerconsumptioninten(request):
     if currentconsumption!=None:
         latestrecord=currentconsumption.CreationDate.strftime("%d")
         if today == latestrecord:
-            vals={}
-            val=Powerconsumed.objects.all()
-            for i in range(val.count()):
-                vals[i]=val[i].kWh
-            val=json.loads(json.dumps({'power consumed today':vals}))
-
+            switch="ON"
+            if (thresh>currentconsumption.kWh):
+                vals={}
+                val=Powerconsumed.objects.all()
+                for i in range(val.count()):
+                    vals[i]=val[i].kWh
+                val=json.loads(json.dumps({'power consumed today':vals,'Switch':switch}))
+            else:
+                switch="OFF"
+                vals={}
+                val=Powerconsumed.objects.all()
+                for i in range(val.count()):
+                    vals[i]=val[i].kWh
+                val=json.loads(json.dumps({'power consumed today':vals,'Switch':switch}))
         else:
             archive()
     daily_usage=Powerconsumeddaily.objects.all()
