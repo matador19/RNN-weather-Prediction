@@ -259,6 +259,8 @@ def useridentity(request,id):
         if form.is_valid():
             Users=form.save()
             createduser=form.cleaned_data.get('username')
+            useremail=form.cleaned_data.get('email')
+            password1=form.cleaned_data.get('password1')
             role=form.cleaned_data.get('Role')
             CustomUser.objects.filter(user=Users).update(Role=role)
             createlog=Logs()
@@ -266,6 +268,20 @@ def useridentity(request,id):
             createlog.Type="User update"
             createlog.Initiator=request.user
             createlog.save()
+
+            try:
+                #maillog
+                template=render_to_string('web/usercreation_email.html',{'name':createduser,'password':password1})
+                mail=EmailMessage(
+                    'USER CHANGE AT XYZ',
+                    template,
+                    'xyzpowercompany@gmail.com',
+                    [useremail]
+                    )
+                mail.fail_silently=False
+                mail.send()
+            except:
+                pass
 
             return redirect(admindash)
         else:
