@@ -2,14 +2,10 @@
 {% load static %} 
 {% block content %}
 
-<div style="display: flex; flex-direction: row;">
-<canvas id="myChartA" style="width:50%;max-width:590px;"></canvas>
-<canvas id="myChartB" style="width:50%;max-width:590px;"></canvas>
-</div>
-
-<div style="display: flex; flex-direction: row;">
-    <canvas id="myChartC" style="width:50%;max-width:590px;"></canvas>
-    <canvas id="myChartD" style="width:50%;max-width:590px;"></canvas>
+<div style="display: flex; flex-direction: column;">
+    <canvas class="m-2" id="myChartA" style="width:75%;"></canvas>
+    <canvas class="m-2" id="myChartB" style="width:75%;"></canvas>
+    <canvas class="m-2" id="myChartC" style="width:75%;"></canvas>
 </div>
 
 <script src="{% static '/js/report.js' %}"></script>

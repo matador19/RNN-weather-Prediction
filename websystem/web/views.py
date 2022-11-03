@@ -229,6 +229,7 @@ def weatherinput(request):
         model = load_model('model/model.h5')
         result=model.predict(test)
         result=result.flatten()
+        print(result)
         createthreshold=Threshold()
         createthreshold.weatherpred=result[0]
         createthreshold.ThresholdkWh=1.3194205*result[0]+3.14159
@@ -334,9 +335,9 @@ def checkpowerconsumptioninten(request):
     from datetime import datetime
     now = datetime.now()
     today=now.strftime("%d")
-    val={'power consumed':0}
     threshobj=Threshold.objects.all().last()
     thresh=threshobj.ThresholdkWh
+    val={'power consumed':0,'Switch':"ON",'Threshold':thresh}
     print(thresh)
     if request.method=="POST":
         data=request.body
@@ -359,14 +360,14 @@ def checkpowerconsumptioninten(request):
                 val=Powerconsumed.objects.all()
                 for i in range(val.count()):
                     vals[i]=val[i].kWh
-                val=json.loads(json.dumps({'power consumed today':vals,'Switch':switch}))
+                val=json.loads(json.dumps({'power consumed today':vals,'Switch':switch,'Threshold':thresh}))
             else:
                 switch="OFF"
                 vals={}
                 val=Powerconsumed.objects.all()
                 for i in range(val.count()):
                     vals[i]=val[i].kWh
-                val=json.loads(json.dumps({'power consumed today':vals,'Switch':switch}))
+                val=json.loads(json.dumps({'power consumed today':vals,'Switch':switch,'Threshold':thresh}))
         else:
             archive()
     daily_usage=Powerconsumeddaily.objects.all()
