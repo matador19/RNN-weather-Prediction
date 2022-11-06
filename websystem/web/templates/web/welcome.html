@@ -1,20 +1,58 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#4285f4">
     <title>Bootstrap demo</title>
+    <link rel="icon" type="image/x-icon" href="{% static '/images/favicon.png' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet"type="text/css" href="{% static '/css/welcome.css' %}">
   </head>
-  <body>
-    <div class="container-fluid" style="display:flex; justify-content: center; align-items: center; height: 100vh;">
-        <div>
-            <h1>Welcome to the solar power energy control center</h1>
-            <div style="display: flex; justify-content: center;">
-                <a href="{% url 'login' %}" type="button" class="btn btn-primary" >LOG IN</a>
-            </div>
-        </div>
+  <body id="css-selector">
+    <header>
+      <div class="container d-flex justify-content-center align-items-center">
+        <img class="rounded float-start" style="height: 100px; width: 100px;" src="{% static '/images/welcome-icon.svg' %}">
+        <h2>SOLAR POWER MANAGEMENT CONTROL</h2>
       </div>
+    </header>
+    <main class="d-flex flex-column mt-5">
+      <div class="container d-flex mt-5">
+      <img style="height: 150px; width:150px" src="{% static '/images/charging-up.png' %}">
+      <div class="container ms-2">
+      <h3>CONTROL YOUR POWER CONSUMPTION</h3>
+      <p>Solar energy needs constant checks to make sure your consumption is well controlled.
+        The control panel will help you achieve some level of control of consumption.
+      </p>
+    </div>
+  </div>
+
+  <div class="container d-flex mt-5">
+    <img style="height: 150px; width:150px" src="{% static '/images/brain.svg' %}">
+    <div class="container ms-2">
+      <h3>NUERAL MODEL PREDICTION</h3>
+      <p>Control power consumption based on the weather prediction for the the next hours.
+        The prediction is based on the temperature input that you will enter.
+      </p>
+      </div>
+      </div>
+  <div class="container d-flex mt-5">
+    <img style="height: 150px; width:150px" src="{% static '/images/calculator.svg' %}">
+    <div class="container ms-2">
+      <h3>NO MORE CALCULATIONS</h3>
+      <p>No more hassle on calculating consumption based on the temperature or past usage
+        as this is done by simple machine learning.
+      </p>
+    </div>
+    </div>
+
+    <div class="container d-flex mt-5 justify-content-center">
+      <a class="btn btn-primary" role="button" href="{% url 'login'%}" aria-disabled="true">LOG IN HERE</a>
+    </div>
+
+    </main>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
   </body>
 </html>
