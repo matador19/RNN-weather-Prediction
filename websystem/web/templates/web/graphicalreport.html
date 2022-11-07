@@ -1,15 +1,16 @@
 {% extends 'web/base.html' %}
 {% load static %} 
 {% block content %}
+{% if user.customuser.Role == "Supervisor" %}
 
 <div style="display: flex; flex-direction: column;">
-    <canvas class="m-2" id="myChartA" style="width:75%;"></canvas>
-    <canvas class="m-2" id="myChartB" style="width:75%;"></canvas>
-    <canvas class="m-2" id="myChartC" style="width:75%;"></canvas>
+    <canvas class="m-1" id="myChartA" style="width:70%;"></canvas>
+    <canvas class="m-1" id="myChartB" style="width:70%;"></canvas>
+    <canvas class="m-1" id="myChartC" style="width:70%;"></canvas>
 </div>
 
 <script src="{% static '/js/report.js' %}"></script>
-
+{% endif %}
 {% endblock %}
 
 

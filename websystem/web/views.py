@@ -8,11 +8,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from requests import request
-from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform,Ticketform,TicketResponseform
-from web.models import CustomUser,Logs,Weatherdata,Powerconsumed,Powerconsumeddaily,Ticket,TicketResponse,Threshold
+from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform,Ticketform,TicketResponseform,manualoverrideform
+from web.models import CustomUser,Logs,Weatherdata,Powerconsumed,Powerconsumeddaily,Ticket,TicketResponse,Threshold,sentmail
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage,send_mass_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json 
 from django.views.decorators.csrf import csrf_exempt
@@ -156,7 +156,7 @@ def supdash(request):
 
 @login_required
 def userlogs(request):
-    exclude_list =['User creation','User update','User delete','Password edit']
+    exclude_list =['User creation','User update','User delete','Password edit','Threshold change']
     logs=Logs.objects.all()
     for item in exclude_list:
         logs=logs.exclude(Type=item).order_by('-LogId') # for all logins to be seen by all admins
@@ -255,7 +255,7 @@ def weatherapi(request):
     for i in range(fetchdata.count()):
         data[i]={'CreationDate':fetchdata[i].CreationDate.strftime("%d-%m")}
         data[i]['Temperature']=fetchdata[i].Temperature
-    print(data)
+    #print(data)
     return JsonResponse(data,safe=False)
 @login_required
 def userslist(request):
@@ -330,6 +330,8 @@ class passwordreset(PasswordResetView):
 
 @csrf_exempt
 def checkpowerconsumptioninten(request):
+    mailstatusobjone=sentmail.objects.get(pk=1)
+    mailstatusobjtwo=sentmail.objects.get(pk=2)
     def archive():
         values=Powerconsumed.objects.all().last()
         sum=values.kWh
@@ -339,15 +341,25 @@ def checkpowerconsumptioninten(request):
         summed.ThresholdkWh=thresholdkWh.ThresholdkWh
         summed.save()
         Powerconsumed.objects.all().delete()
+        mailstatusobjone.sentmail=False
+        mailstatusobjone.save()
+        mailstatusobjtwo.sentmail=False
+        mailstatusobjtwo.save()
+
 
     powerconsumed=Powerconsumed()
     from datetime import datetime
     now = datetime.now()
     today=now.strftime("%d")
+    mailstatusone=mailstatusobjone.sentmail
+    mailstatustwo=mailstatusobjtwo.sentmail
     threshobj=Threshold.objects.all().last()
     thresh=threshobj.ThresholdkWh
     val={'power consumed':0,'Switch':"ON",'Threshold':thresh}
-    print(thresh)
+    emails=User.objects.filter(customuser__Role="Supervisor")
+    useremails=[]
+    for y in range(emails.count()):
+        useremails.append(emails[y].email)
     if request.method=="POST":
         data=request.body
         data=json.loads(data)
@@ -370,7 +382,42 @@ def checkpowerconsumptioninten(request):
                 for i in range(val.count()):
                     vals[i]=val[i].kWh
                 val=json.loads(json.dumps({'power consumed today':vals,'Switch':switch,'Threshold':thresh}))
+                if (currentconsumption.kWh>(0.75*thresh) and mailstatusone==False):
+                    try:
+                            #maillog
+                        template=render_to_string('web/thresholdwarning_email.html',{'currentpower':currentconsumption.kWh,'threshold':thresh})
+                        mail=EmailMessage(
+                            '75% OF THRESHOLD USED',
+                            template,
+                            'xyzpowercompany@gmail.com',
+                            useremails
+                            )
+                        mail.fail_silently=False
+                        mail.send()
+                    
+                    except:
+                        pass
+                    mailstatusobjone.sentmail=True
+                    mailstatusobjone.save()
+
             else:
+                if (mailstatustwo==False):
+                    try:
+                        #maillog
+                        template=render_to_string('web/Thresholdreach_email.html')
+                        mail=EmailMessage(
+                            'THRESHOLD REACHED',
+                            template,
+                            'xyzpowercompany@gmail.com',
+                            useremails
+                            )
+                        mail.fail_silently=False
+                        mail.send()
+                    except:
+                        pass
+                    mailstatusobjtwo.sentmail=True
+                    mailstatusobjtwo.save()
+
                 switch="OFF"
                 vals={}
                 val=Powerconsumed.objects.all()
@@ -441,5 +488,34 @@ def revieweachticket(request,id):
     return render(request,'web/Ticketing/revieweachticket.html',context={'ticket':tickets,'form':form})
 
 
-    def manualoverride(request):
-        pass
+def manualoverride(request):
+    Thresholdset=Threshold.objects.latest('CreationDate')
+    if request.method=="POST": 
+        form=manualoverrideform(request.POST,instance=Thresholdset)
+        if form.is_valid():
+            newthresh=form.cleaned_data.get('ThresholdkWh')
+            form.save()
+            messages.success(request, "Details added successful.")
+
+            createlog=Logs()
+            createlog.Change=request.user.username+" changed threshold to "+ str(newthresh)
+            createlog.Type="Threshold change"
+            createlog.Initiator=request.user
+            createlog.save()
+        
+        else:
+            messages.error(request, "Unsuccessful override. Invalid input.")
+
+    Thresholdlog=Logs.objects.filter(Type='Threshold change').order_by('-CreationDate')
+    page = request.GET.get('page', 1)
+    paginator = Paginator(Thresholdlog, 10)
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
+
+    form=manualoverrideform(instance=Thresholdset)
+    return render(request,'web/manualoverride.html',context={'update_form':form,'users':users})
+

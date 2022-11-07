@@ -121,7 +121,7 @@ function powerconsumed(data){
             },
             ticks:{
               min: 0,
-              max: 50,
+              max: 75,
               step: 0.5
             }
           }]

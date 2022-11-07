@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm,PasswordChangeForm,PasswordResetForm
 from django.contrib.auth.models import User
 from django.forms import FloatField, ModelForm,NumberInput
-from web.models import CustomUser,Weatherdata,Ticket,TicketResponse
+from web.models import CustomUser,Weatherdata,Ticket,TicketResponse,Threshold
 
 class NewUserForm(UserCreationForm):
     email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'class':'form-control'}))
@@ -91,5 +91,21 @@ class TicketResponseform(ModelForm):
             'class': "form-control",
             'style': 'max-width: 100rem;',
             'placeholder': 'Enter message here'
+            })
+        }
+
+class manualoverrideform(ModelForm):
+    class Meta:
+        model=Threshold
+        fields=("ThresholdkWh",)
+
+        widgets = {
+        'ThresholdkWh': forms.NumberInput(attrs={
+            'class': "form-control",
+            'style': 'max-width: 300px;',
+            'placeholder': 'Temperature',
+            'min': '0',
+            'max': '100',
+            'step': '0.001'
             })
         }

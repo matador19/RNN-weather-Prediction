@@ -81,3 +81,10 @@ class TicketResponse(models.Model):
 
     def __str__(self):
         return str(self.TicketResponseId)
+
+class sentmail(models.Model):
+    sentmailID=models.AutoField(primary_key=True)
+    sentmail=models.BooleanField()
+
+    def __str__(self):
+        return str(self.sentmail)+str(self.sentmailID)

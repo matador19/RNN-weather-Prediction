@@ -28,6 +28,7 @@ urlpatterns+=[
     path("reviewticket",views.reviewticket,name="reviewticket"),
     path("revieweachticket/<int:id>",views.revieweachticket,name="revieweachticket"),
     path("powerinputinten",views.checkpowerconsumptioninten,name="powerinputinten"),
+    path("manualoverride",views.manualoverride,name="manualoverride"),
 
 
     path("passchange/",changepass.as_view(template_name='web/userpass/password-change.html'),name="changepass"),

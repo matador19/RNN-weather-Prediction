@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "web",
-    "django_ses"
+    "django_ses",
+    "mathfilters"
 ]
 
 MIDDLEWARE = [
