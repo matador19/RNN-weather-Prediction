@@ -60,7 +60,7 @@ class Powerconsumeddaily(models.Model):
     ThresholdkWh=models.FloatField(null=True)
 
     def __str__(self):
-        return str(self.PowerConsumeId)
+        return str(self.PowerConsumeddailyId)
 
 class Threshold(models.Model):
     ThresholdId=models.AutoField(primary_key=True)
@@ -69,7 +69,7 @@ class Threshold(models.Model):
     ThresholdkWh=models.FloatField()
 
     def __str__(self):
-        return str(self.PowerConsumeId)
+        return str(self.ThresholdkWh)
 
 class TicketResponse(models.Model):
     TicketResponseId=models.AutoField(primary_key=True)

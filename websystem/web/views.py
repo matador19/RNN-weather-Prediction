@@ -214,28 +214,37 @@ def weatherinput(request):
             Weatherdetails.Temperature=form.cleaned_data['Temperature']
             Weatherdetails.Initiator=request.user
             Weatherdetails.save()
+
+            X_input=Weatherdata.objects.all().order_by('-WeatherId')[:5]
+            try:
+                test=[]
+                for x in range(X_input.count()):
+                    test.append(X_input[x].Temperature)
+                test=np.reshape(test,(-1,1))
+                test=np.reshape(test,(test.shape[1],test.shape[0],1))
+                model = load_model('model/model.h5')
+                result=model.predict(test)
+                result=result.flatten()
+                print(result)
+                daily_average=Powerconsumeddaily.objects.all().order_by('-PowerConsumeddailyId')[:5]
+                mean=0
+                sum=0
+                for y in range(daily_average.count()):
+                    sum+=daily_average[y].ThresholdkWh
+                mean=sum/daily_average.count()
+                print(mean)
+                createthreshold=Threshold()
+                createthreshold.weatherpred=result[0]
+                createthreshold.ThresholdkWh=0.35*result[0]+mean
+                createthreshold.save()
+            except:
+                pass
             messages.success(request, "Details added successful." )
         else:
             messages.error(request, "Something went wrong.")
     form=Weatherinput()
     Weatherdetails=Weatherdata.objects.all().order_by('-WeatherId')[:10]
-    X_input=Weatherdata.objects.all().order_by('-WeatherId')[:5]
-    try:
-        test=[]
-        for x in range(X_input.count()):
-            test.append(X_input[x].Temperature)
-        test=np.reshape(test,(-1,1))
-        test=np.reshape(test,(test.shape[1],test.shape[0],1))
-        model = load_model('model/model.h5')
-        result=model.predict(test)
-        result=result.flatten()
-        print(result)
-        createthreshold=Threshold()
-        createthreshold.weatherpred=result[0]
-        createthreshold.ThresholdkWh=1.3194205*result[0]+3.14159
-        createthreshold.save()
-    except:
-        pass
+
     return render(request,'web/weatherinput.html',context={'weatherform':form,'Weatherdetails':Weatherdetails})
 
 
@@ -430,3 +439,7 @@ def revieweachticket(request,id):
             return redirect(reviewticket)
     form=TicketResponseform()
     return render(request,'web/Ticketing/revieweachticket.html',context={'ticket':tickets,'form':form})
+
+
+    def manualoverride(request):
+        pass
