@@ -45,4 +45,8 @@ body{
 main{
     height:inherit
 }
+
+button{
+    size: 25rem;
+}
   
