@@ -1,23 +1,23 @@
 {% extends 'web/base.html' %}
+{% load mathfilters %}
 {% block content %}
 {% if user.customuser.Role == "Supervisor" %}
+
 <h3>DASHBOARD</h3>
 <p style="margin-left:2rem ;">Welcome &nbsp; <span style="font-weight: bold; font-style: italic;">{{user.username}}</span></p>
-<p>Tickets Raised: &ensp;<span style="font-weight: bold; font-style: italic;">NUll</p>
 
 <h4>Summary</h4>
-<p>Weather Predicted: &ensp;<span style="font-weight: bold; font-style: italic;">NUll</p></br>
-<p>Average Power Generation: &ensp;<span style="font-weight: bold; font-style: italic;">NUll</p>
-<p>Average Power Units Generated: &ensp;<span style="font-weight: bold; font-style: italic;">NUll</p>
-<p>Average Power Units Consumed: &ensp;<span style="font-weight: bold; font-style: italic;">NUll</p>
-<p>Power Consumed in an Hour (kW): &ensp;<span style="font-weight: bold; font-style: italic;">NUll</p>
-<p>Average Power Units Consumed: &ensp;<span style="font-weight: bold; font-style: italic;">NUll</p>
+<p>Power Units Consumed: &ensp;<span style="font-weight: bold; font-style: italic;">{{powerconsumed}}</p>
+<p>Threshold set: &ensp;<span style="font-weight: bold; font-style: italic;">{{Thresh}}</p>
 <div style="display: flex; flex-direction: row;">
-<p>Imbalance: &ensp;<span style="font-weight: bold; font-style: italic;">NUll</p>
-<p style="margin-left: 5%;">Remark: &ensp;<span style="font-weight: bold; font-style: italic;">NUll</p>
+<p>Remaining units to be cosumed: &ensp;<span style="font-weight: bold; font-style: italic;">{{Thresh |sub:powerconsumed}}</p>
+{% if Thresh > powerconsumed %}
+<p style="margin-left: 5%;">STATUS: &ensp;<span style="font-weight: bold; font-style: italic; color: rgb(31, 201, 25);">SWITCH ON</p>
+{% else %}
+<p style="margin-left: 5%;">STATUS: &ensp;<span style="font-weight: bold; font-style: italic; color: rgb(246, 3, 3);">SWITCH OFF</p>
+{% endif %}
 </div>
 </br>
-<p >Power Output Threshold: &ensp;<span style="font-weight: bold; font-style: italic;">100kWh</p>
 
 </br></br>
 <p>Login At: &ensp;<span style="font-weight: bold; font-style: italic;">{{logs.CreationDate}}</p>

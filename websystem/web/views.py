@@ -152,7 +152,13 @@ def admindash(request):
 def supdash(request):
     logs=Logs.objects.filter(Initiator=request.user).order_by('-LogId')
     logs=logs[0]
-    return render(request,'web/supdash.html',context={'logs':logs})
+    Thresh=Threshold.objects.latest('CreationDate')
+    powerconsumed=Powerconsumed.objects.all().order_by('-PowerConsumeId')
+    if (powerconsumed.exists()):
+        powerconsumed=powerconsumed[0].kWh
+    else:
+        powerconsumed=0 
+    return render(request,'web/supdash.html',context={'logs':logs,'Thresh':Thresh.ThresholdkWh,'powerconsumed':powerconsumed})
 
 @login_required
 def userlogs(request):
