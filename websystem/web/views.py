@@ -19,7 +19,35 @@ from django.views.decorators.csrf import csrf_exempt
 import joblib
 import numpy as np
 from keras.models import load_model
+import africastalking
 
+#This is for the sms setup
+class SMS:
+    def __init__(self):
+        self.username = "Alex1313"
+        self.api_key = "6e2270600b2528d90a1c38252b1313be44d44db7d30ce10c7c0d86de6277d516"
+
+        # Initialize the SDK
+        africastalking.initialize(self.username, self.api_key)
+
+        # Get the SMS service
+        self.sms = africastalking.SMS
+
+    def send(self,number,messages):
+		# Set the numbers you want to send to in international format
+        recipients = number
+
+			# Set your message
+        message =messages
+
+			# Set your shortCode or senderId
+
+        try:
+        # Thats it, hit send and we'll take care of the rest.
+            response = self.sms.send(message, recipients)
+            print (response)
+        except Exception as e:
+        	print ('Encountered an error while sending: %s' % str(e))
 
 #Create your views here.
 def home(request):
@@ -353,6 +381,8 @@ def checkpowerconsumptioninten(request):
         mailstatusobjtwo.save()
 
 
+
+
     powerconsumed=Powerconsumed()
     from datetime import datetime
     now = datetime.now()
@@ -363,7 +393,13 @@ def checkpowerconsumptioninten(request):
     thresh=threshobj.ThresholdkWh
     val={'power consumed':0,'Switch':"ON",'Threshold':thresh}
     emails=User.objects.filter(customuser__Role="Supervisor")
+    phones=User.objects.filter(customuser__Role="Supervisor")
+    userphones=[]
     useremails=[]
+    for z in range(phones.count()):
+        if phones[z].customuser.Phone !=None:
+            userphones.append('+'+str(phones[z].customuser.Phone))
+    print(userphones)
     for y in range(emails.count()):
         useremails.append(emails[y].email)
     if request.method=="POST":
@@ -400,6 +436,9 @@ def checkpowerconsumptioninten(request):
                             )
                         mail.fail_silently=False
                         mail.send()
+                        
+                        SMS().send(userphones,template)
+                        
                     
                     except:
                         pass
@@ -419,6 +458,7 @@ def checkpowerconsumptioninten(request):
                             )
                         mail.fail_silently=False
                         mail.send()
+                        SMS().send(userphones,template)
                     except:
                         pass
                     mailstatusobjtwo.sentmail=True
