@@ -508,6 +508,15 @@ def manualoverride(request):
             createlog.Type="Threshold change"
             createlog.Initiator=request.user
             createlog.save()
+
+            mailstatusobjone=sentmail.objects.get(pk=1)
+            mailstatusobjtwo=sentmail.objects.get(pk=2)
+            mailstatusobjone.sentmail=False
+            mailstatusobjone.save()
+            mailstatusobjtwo.sentmail=False
+            mailstatusobjtwo.save()
+
+
         
         else:
             messages.error(request, "Unsuccessful override. Invalid input.")
