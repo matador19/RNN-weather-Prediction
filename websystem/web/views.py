@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from requests import request
-from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform,Ticketform,TicketResponseform,manualoverrideform
+from .forms import NewUserForm,Weatherinput, Changepass,passwordresetform,Ticketform,TicketResponseform,manualoverrideform,Customuserform
 from web.models import CustomUser,Logs,Weatherdata,Powerconsumed,Powerconsumeddaily,Ticket,TicketResponse,Threshold,sentmail
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -63,17 +63,25 @@ def home(request):
 def register_request(request):
     
     if request.method == "POST":
-        form = NewUserForm(request.POST)
-        if form.is_valid():
-            User=form.save()
-            createduser=form.cleaned_data.get('username')
-            useremail=form.cleaned_data.get('email')
-            password1=form.cleaned_data.get('password1')
-            role=form.cleaned_data.get('Role')
+        formone = NewUserForm(request.POST)
+        formtwo = Customuserform(request.POST)
+        if formone.is_valid() and formtwo.is_valid():
+            User=formone.save()
+
+            createduser=formone.cleaned_data.get('username')
+            useremail=formone.cleaned_data.get('email')
+            password1=formone.cleaned_data.get('password1')
+            role=formtwo.cleaned_data.get('Role')
+            phone=formtwo.cleaned_data.get('Phone')
+            userphone=['+'+str(phone)]
+
+            print(phone)
             CustomUser.objects.create(
                 user=User,
-                Role=role
+                Role=role,
+                Phone=phone
             )
+            
             createlog=Logs()
             createlog.Change=request.user.username+" created user " + createduser+" as a "+role
             createlog.Type="User creation"
@@ -92,14 +100,16 @@ def register_request(request):
                     )
                 mail.fail_silently=False
                 mail.send()
+                SMS().send(userphone,template)
             except:
                 pass
 
             return redirect(admindash)
         else:
             messages.error(request, "Unsuccessful registration. Invalid information.")
-    form = NewUserForm()
-    return render (request=request, template_name="web/createuser.html", context={"register_form":form})
+    formone = NewUserForm()
+    formtwo = Customuserform()
+    return render (request=request, template_name="web/createuser.html", context={"register_form":formone,'formtwo':formtwo})
     
 
 def loginform(request):
@@ -305,14 +315,16 @@ def userslist(request):
 def useridentity(request,id):
     useridentity=User.objects.get(pk=id)
     if request.method == "POST":
-        form=NewUserForm(request.POST,instance=useridentity)
-        if form.is_valid():
-            Users=form.save()
-            createduser=form.cleaned_data.get('username')
-            useremail=form.cleaned_data.get('email')
-            password1=form.cleaned_data.get('password1')
-            role=form.cleaned_data.get('Role')
-            CustomUser.objects.filter(user=Users).update(Role=role)
+        formone=NewUserForm(request.POST,instance=useridentity)
+        formtwo=Customuserform(request.POST,instance=useridentity.customuser)
+        if formone.is_valid() and formtwo.is_valid():
+            formone.save()
+            formtwo.save()
+            createduser=formone.cleaned_data.get('username')
+            useremail=formone.cleaned_data.get('email')
+            password1=formone.cleaned_data.get('password1')
+            role=formtwo.cleaned_data.get('Role')
+
             createlog=Logs()
             createlog.Change=request.user.username+" updated user " +useridentity.username+" to "+ createduser+" as a "+role
             createlog.Type="User update"
@@ -336,8 +348,9 @@ def useridentity(request,id):
             return redirect(admindash)
         else:
             messages.error(request, "Unsuccessful update. Invalid information.")
-    form=NewUserForm(instance=useridentity)
-    return render(request,'web/userupdate.html',context={'update_form':form})
+    formone=NewUserForm(instance=useridentity)
+    formtwo=Customuserform(instance=useridentity.customuser)
+    return render(request,'web/userupdate.html',context={'update_form':formone,'formtwo':formtwo})
 @login_required
 def deleteuser(request,id):
     useridentity=User.objects.get(pk=id)

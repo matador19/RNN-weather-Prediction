@@ -12,7 +12,8 @@
       {% endif %}
 	<form method="POST">
 		{% csrf_token %}
-		{{ register_form }} 
+		{{ register_form }}
+    {{ formtwo }}
     <br/>                   
 		<button class="btn btn-primary mt-3" type="submit">Create User</button>
 	</form>

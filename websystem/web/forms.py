@@ -6,18 +6,16 @@ from django.forms import FloatField, ModelForm,NumberInput
 from web.models import CustomUser,Weatherdata,Ticket,TicketResponse,Threshold
 
 class NewUserForm(UserCreationForm):
+    username=forms.CharField(max_length=255,widget=forms.TextInput(attrs={'class':'form-control'}))
     email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'class':'form-control'}))
     first_name=forms.CharField(max_length=255,widget=forms.TextInput(attrs={'class':'form-control'}))
     last_name=forms.CharField(max_length=255,widget=forms.TextInput(attrs={'class':'form-control'}))
-    Role=forms.ChoiceField(choices=(('Admin','Admin'),('Supervisor','Supervisor')),required=True,widget=forms.Select(attrs={'class':'form-control'}))
-
     class Meta:
         model = User
-        fields = ("username", "email", "first_name","last_name","Role","password1", "password2")
+        fields = ("username", "email", "first_name","last_name","password1", "password2")
 
     def __init__(self, *args, **kwargs):
         super(NewUserForm, self).__init__(*args,**kwargs)
-
         self.fields['username'].widget.attrs['class'] = 'form-control'
         self.fields['username'].help_text = None
         #Temporary path but prone to SQL injection from the from as the form is not hidden
@@ -34,11 +32,18 @@ class NewUserForm(UserCreationForm):
         user.email = self.cleaned_data['email']
         user.first_name=self.cleaned_data['first_name']
         user.last_name=self.cleaned_data['last_name']
-        user.Role=self.cleaned_data['Role']
         if commit:
             user.save()
         return user
     
+
+class Customuserform(ModelForm):
+    Role=forms.ChoiceField(choices=(('Admin','Admin'),('Supervisor','Supervisor')),required=True,widget=forms.Select(attrs={'class':'form-control'}))
+    Phone=forms.IntegerField(widget=forms.NumberInput(attrs={'class':'form-control'}))
+
+    class Meta:
+        model = CustomUser
+        fields = ("Role","Phone")
 
 class Weatherinput(ModelForm):
     class Meta:

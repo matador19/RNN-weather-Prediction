@@ -13,7 +13,8 @@
       {% endif %}
 	<form method="POST">
 		{% csrf_token %}
-		{{ update_form }} 
+		{{ update_form }}
+    {{ formtwo}} 
     <br/>                   
 		<button class="btn btn-primary mt-3" type="submit">Update User</button>
 	</form>
