@@ -20,12 +20,18 @@ import joblib
 import numpy as np
 from keras.models import load_model
 import africastalking
+import environ
+
+
+env = environ.Env()
+environ.Env.read_env()
+
 
 #This is for the sms setup
 class SMS:
     def __init__(self):
-        self.username = "Alex1313"
-        self.api_key = "6e2270600b2528d90a1c38252b1313be44d44db7d30ce10c7c0d86de6277d516"
+        self.username =env('SMS_USERNAME')
+        self.api_key = env('SMS_API_KEY')
 
         # Initialize the SDK
         africastalking.initialize(self.username, self.api_key)
