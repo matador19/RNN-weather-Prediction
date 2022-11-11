@@ -75,7 +75,7 @@ def register_request(request):
             phone=formtwo.cleaned_data.get('Phone')
             userphone=['+'+str(phone)]
 
-            print(phone)
+            print(userphone)
             CustomUser.objects.create(
                 user=User,
                 Role=role,
@@ -92,7 +92,7 @@ def register_request(request):
             try:
                 #maillog
                 template=render_to_string('web/usercreation_email.html',{'name':createduser,'password':password1})
-                smstemplate=render_to_string('web/sms/creationsms.html.html',{'name':createduser,'password':password1})
+                smstemplate=render_to_string('web/sms/creationsms.html',{'name':createduser,'password':password1})
                 mail=EmailMessage(
                     'USER CREATION AT XYZ',
                     template,
@@ -101,7 +101,7 @@ def register_request(request):
                     )
                 mail.fail_silently=False
                 mail.send()
-                SMS().send(userphone,template)
+                SMS().send(userphone,smstemplate)
             except:
                 pass
 

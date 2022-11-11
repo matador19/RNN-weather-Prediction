@@ -111,7 +111,7 @@ function powerconsumed(data){
         xAxes:[{
           scaleLabel: {
             display: true,
-            labelString: 'DATE'
+            labelString: 'HITS'
           }
         }],
           yAxes:[{
