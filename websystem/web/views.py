@@ -92,6 +92,7 @@ def register_request(request):
             try:
                 #maillog
                 template=render_to_string('web/usercreation_email.html',{'name':createduser,'password':password1})
+                smstemplate=render_to_string('web/sms/creationsms.html.html',{'name':createduser,'password':password1})
                 mail=EmailMessage(
                     'USER CREATION AT XYZ',
                     template,
@@ -447,6 +448,7 @@ def checkpowerconsumptioninten(request):
                     try:
                             #maillog
                         template=render_to_string('web/thresholdwarning_email.html',{'currentpower':currentconsumption.kWh,'threshold':thresh})
+                        smstemplate=render_to_string('web/sms/alertsms.html',{'currentpower':currentconsumption.kWh,'threshold':thresh})
                         mail=EmailMessage(
                             '75% OF THRESHOLD USED',
                             template,
@@ -456,7 +458,7 @@ def checkpowerconsumptioninten(request):
                         mail.fail_silently=False
                         mail.send()
                         
-                        SMS().send(userphones,template)
+                        SMS().send(userphones,smstemplate)
                         
                     
                     except:
@@ -469,6 +471,7 @@ def checkpowerconsumptioninten(request):
                     try:
                         #maillog
                         template=render_to_string('web/Thresholdreach_email.html')
+                        smstemplate=render_to_string('web/sms/reachalertsms.html')
                         mail=EmailMessage(
                             'THRESHOLD REACHED',
                             template,
@@ -477,7 +480,7 @@ def checkpowerconsumptioninten(request):
                             )
                         mail.fail_silently=False
                         mail.send()
-                        SMS().send(userphones,template)
+                        SMS().send(userphones,smstemplate)
                     except:
                         pass
                     mailstatusobjtwo.sentmail=True

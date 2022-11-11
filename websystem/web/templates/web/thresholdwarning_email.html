@@ -1,5 +1,8 @@
 {% load mathfilters %}
-YOUR POWER USAGE FOR TODAY IS {{ currentpower }}. THE THRESHOLD SET IS {{ threshold }}.
+YOUR POWER USAGE FOR TODAY IS {{ currentpower }} kWh.
+THE THRESHOLD SET IS {{ threshold }} kWh.
+
+
 YOU HAVE ONLY {{ threshold |sub:currentpower}} kWh TO USE BEFORE YOU REACH YOUR THRESHOLD. IF YOU WOULD LIKE TO
 INCREASE THE THRESHOLD, CONSIDER MANUAL OVERRIDE.
 

@@ -15,9 +15,9 @@
     <td >{{user.customuser.Role}}</td>
     <td >
         <a href="{% url 'useridentity' user.id %}" class="btn btn-primary" role="button">Edit</a>
-        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmdelete">Delete</button>
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmdelete{{ user.id }}">Delete</button>
 <!-- Modal form-->
-<div class="modal fade" id="confirmdelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="confirmdelete{{ user.id }}"  tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -25,7 +25,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p class="text-danger">Are you sure you want to delete this user?</p>
+          <p class="text-danger">Are you sure you want to delete {{user.username}}?</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">NO</button>
