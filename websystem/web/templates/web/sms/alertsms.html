@@ -1,7 +1,7 @@
 {% load mathfilters %}
-YOUR POWER USAGE FOR TODAY IS {{ currentpower|intdiv }} kWh.
-THE THRESHOLD SET IS {{ threshold|intdiv }} kWh.
-YOU HAVE ONLY {{ threshold |sub:currentpower}} kWh 
+YOUR POWER USAGE FOR TODAY IS {{ currentpower|intdiv:1 }} kWh.
+THE THRESHOLD SET IS {{ threshold|intdiv:1 }} kWh.
+YOU HAVE ONLY {{ threshold |sub:currentpower|intdiv:1}} kWh 
 
 From
 Power Company
